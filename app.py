@@ -1,25 +1,20 @@
-# ─────────────────────────────────────────────
-# app/app.py — Aplikasi Web Data Mining
-# Jalankan: streamlit run app/app.py
-# ─────────────────────────────────────────────
 import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
-import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px
-import plotly.graph_objects as go
-from sklearn.decomposition import PCA
 import gdown
 import os
 
+# ── Download rf_model.pkl dari Google Drive kalau belum ada
+os.makedirs("model", exist_ok=True)
 if not os.path.exists("model/rf_model.pkl"):
     gdown.download(
-        "https://drive.google.com/1poyk0eid_PBIOFjGIOpxnmWP66qYLDsj/view?usp=sharing",
+        "https://drive.google.com/uc?id=1poyk0eid_PBIOFjGIOpxnmWP66qYLDsj",
         "model/rf_model.pkl",
         quiet=False
     )
+
 # ── Konfigurasi halaman
 st.set_page_config(
     page_title="Analisis Pembelajaran Matematika",
@@ -63,32 +58,24 @@ if page == "🏠 Home":
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.info("📊 **Dataset**
-UCI ML Repository
-1044 records · 26 fitur")
+        st.info("📊 **Dataset**\nUCI ML Repository\n9546 records · 7 fitur")
     with col2:
-        st.success(f"🤖 **Metode**
-K-Means Clustering (k={meta['optimal_k']})
-+ Random Forest")
+        st.success(f"🤖 **Metode**\nK-Means Clustering (k={meta['optimal_k']})\n+ Random Forest")
     with col3:
-        st.warning(f"🏆 **Performa Model**
-Accuracy: {meta['accuracy']*100:.2f}%
-Silhouette: {meta['silhouette_score']:.4f}")
+        st.warning(f"🏆 **Performa Model**\nAccuracy: {meta['accuracy']*100:.2f}%\nSilhouette: {meta['silhouette_score']:.4f}")
 
     st.markdown("### Deskripsi Proyek")
     st.write("""
     Proyek ini bertujuan menganalisis pola pembelajaran matematika mahasiswa menggunakan
     dua metode Data Mining:
     - **K-Means Clustering** untuk menemukan kelompok mahasiswa berdasarkan perilaku belajar
-    - **Random Forest Classification** untuk memprediksi nilai akhir mahasiswa
+    - **Random Forest Classification** untuk memprediksi keyword materi mahasiswa
 
     Fitur `country` dihapus untuk menghindari bias geografis (*fairness-aware feature selection*).
     """)
 
     st.markdown("### Anggota Kelompok")
-    st.write("- Nama 1 (NIM)
-- Nama 2 (NIM)
-- Nama 3 (NIM)")
+    st.write("- Nama 1 (NIM)\n- Nama 2 (NIM)\n- Nama 3 (NIM)")
 
 # ══════════════════════════════════
 # HALAMAN 2: DATASET OVERVIEW
@@ -97,7 +84,6 @@ elif page == "📊 Dataset Overview":
     st.title("📊 Dataset Overview")
     st.markdown("**Sumber:** UCI Machine Learning Repository — Mathematics Learning in Higher Education")
 
-    # Upload dataset
     uploaded = st.file_uploader("Upload dataset CSV (opsional)", type="csv")
     if uploaded:
         df = pd.read_csv(uploaded)
@@ -115,13 +101,13 @@ elif page == "📊 Dataset Overview":
         st.subheader("Statistik Deskriptif")
         st.dataframe(df.describe().round(2), use_container_width=True)
 
-        # Visualisasi distribusi
         st.subheader("Distribusi Kolom")
         col_sel = st.selectbox("Pilih kolom:", df.columns.tolist())
         if df[col_sel].dtype in [np.float64, np.int64]:
             fig = px.histogram(df, x=col_sel, nbins=30, title=f"Distribusi {col_sel}")
         else:
             vc = df[col_sel].value_counts().reset_index()
+            vc.columns = [col_sel, "count"]
             fig = px.bar(vc, x=col_sel, y="count", title=f"Distribusi {col_sel}")
         st.plotly_chart(fig, use_container_width=True)
     else:
@@ -132,10 +118,9 @@ elif page == "📊 Dataset Overview":
 # ══════════════════════════════════
 elif page == "🤖 Prediksi & Analisis":
     st.title("🤖 Prediksi & Analisis")
-    st.markdown("Masukkan data mahasiswa untuk mendapatkan prediksi cluster dan grade.")
+    st.markdown("Masukkan data mahasiswa untuk mendapatkan prediksi cluster dan keyword materi.")
 
     st.subheader("Input Data Mahasiswa")
-    st.info("Sesuaikan input di bawah dengan fitur aktual dataset Anda.")
 
     feature_cols = [c for c in meta['feature_cols'] if c != 'cluster_label']
 
@@ -144,20 +129,18 @@ elif page == "🤖 Prediksi & Analisis":
         cols = st.columns(3)
         for i, feat in enumerate(feature_cols):
             with cols[i % 3]:
-                if feat in meta['cat_features']:
-                    options = list(le_dict[feat].classes_) if feat in le_dict else ['Ya', 'Tidak']
+                if feat in meta.get('cat_features', []):
+                    options = list(le_dict[feat].classes_) if feat in le_dict else []
                     val = st.selectbox(feat, options)
                     input_data[feat] = le_dict[feat].transform([val])[0] if feat in le_dict else 0
                 else:
-                    input_data[feat] = st.number_input(feat, min_value=0.0, max_value=100.0, value=50.0)
+                    input_data[feat] = st.number_input(feat, min_value=0, max_value=99999, value=100)
 
         submitted = st.form_submit_button("🔍 Analisis", use_container_width=True)
 
     if submitted:
-        # Preprocessing input
         input_df = pd.DataFrame([input_data])
 
-        # Pastikan urutan kolom sesuai
         for col in feature_cols:
             if col not in input_df.columns:
                 input_df[col] = 0
@@ -167,27 +150,29 @@ elif page == "🤖 Prediksi & Analisis":
 
         # Prediksi cluster
         cluster = kmeans.predict(input_scaled)[0]
-        cluster_name = meta['cluster_names'].get(cluster, f'Cluster {cluster}')
+        cluster_name = meta['cluster_names'].get(cluster, f"Cluster {cluster}")
 
-        # Prediksi grade (tambah cluster label)
+        # Prediksi keyword (tambah cluster label sebagai fitur)
         input_clf = np.append(input_scaled, cluster).reshape(1, -1)
         grade_pred = rf_model.predict(input_clf)[0]
         grade_proba = rf_model.predict_proba(input_clf)[0]
-        grade_label = le_target.inverse_transform([grade_pred])[0] if le_target else grade_pred
+        grade_label = le_target.inverse_transform([grade_pred])[0]
 
         st.markdown("---")
         col1, col2 = st.columns(2)
         with col1:
             st.success(f"**Cluster:** {cluster} — {cluster_name}")
         with col2:
-            st.info(f"**Prediksi Grade:** {grade_label}")
+            st.info(f"**Prediksi Keyword:** {grade_label}")
 
-        # Probabilitas per kelas
-        st.subheader("Probabilitas Grade")
-        class_labels = le_target.classes_ if le_target else list(range(len(grade_proba)))
-        prob_df = pd.DataFrame({'Grade': class_labels, 'Probabilitas': grade_proba})
-        fig = px.bar(prob_df, x='Grade', y='Probabilitas',
-                     color='Grade', title='Distribusi Probabilitas Prediksi Grade')
+        # Top 3 probabilitas
+        st.subheader("Top 3 Kemungkinan Keyword")
+        top3_idx = grade_proba.argsort()[-3:][::-1]
+        top3_labels = le_target.inverse_transform(top3_idx)
+        top3_probs = grade_proba[top3_idx]
+        prob_df = pd.DataFrame({"Keyword": top3_labels, "Probabilitas": top3_probs})
+        fig = px.bar(prob_df, x="Keyword", y="Probabilitas",
+                     color="Keyword", title="Top 3 Prediksi Keyword")
         st.plotly_chart(fig, use_container_width=True)
 
 # ══════════════════════════════════
@@ -196,25 +181,21 @@ elif page == "🤖 Prediksi & Analisis":
 elif page == "📈 Visualisasi":
     st.title("📈 Visualisasi Hasil Analisis")
 
-    # Load gambar hasil visualisasi
-    import os
     viz_files = [
-        ('distribusi_target.png', 'Distribusi Target Grade'),
-        ('elbow_silhouette.png', 'Elbow Method & Silhouette Score'),
-        ('cluster_pca_2d.png', 'Visualisasi Cluster (PCA 2D)'),
-        ('cluster_profile_heatmap.png', 'Profil Cluster'),
-        ('confusion_matrix.png', 'Confusion Matrix'),
-        ('feature_importance.png', 'Feature Importance'),
-        ('perbandingan_model.png', 'Perbandingan Model'),
-        ('heatmap_korelasi.png', 'Heatmap Korelasi'),
+        ("analisis_cluster_grade.png", "Analisis Cluster vs Grade"),
+        ("cluster_pca_2d.png", "Visualisasi Cluster (PCA 2D)"),
+        ("cluster_profile_heatmap.png", "Profil Cluster Heatmap"),
+        ("feature_importance.png", "Feature Importance"),
+        ("grade_per_cluster.png", "Distribusi Grade per Cluster"),
+        ("perbandingan_model.png", "Perbandingan Model"),
     ]
 
     for fname, title in viz_files:
         if os.path.exists(fname):
             st.subheader(title)
-            st.image(fname, use_column_width=True)
+            st.image(fname, use_container_width=True)
         else:
-            st.warning(f"{title} ({fname}) belum tersedia. Jalankan notebook terlebih dahulu.")
+            st.warning(f"{title} — file `{fname}` belum tersedia.")
 
 # ══════════════════════════════════
 # HALAMAN 5: ABOUT
@@ -239,8 +220,9 @@ elif page == "ℹ️ About":
     st.markdown("""
     - **Nama:** Dataset for Assessing Mathematics Learning in Higher Education
     - **Sumber:** UCI Machine Learning Repository (ID: 1031)
-    - **Jumlah Data:** 1044 records
-    - **Fitur:** Perilaku belajar, motivasi, strategi belajar, hasil akademik
+    - **Jumlah Data:** 9546 records
+    - **Fitur:** Student ID, Question ID, Type of Answer, Question Level, Topic, Subtopic
+    - **Target:** Keywords
     - **Catatan:** Fitur `country` dihapus (bias geografis)
     """)
 
