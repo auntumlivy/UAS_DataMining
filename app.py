@@ -1,547 +1,542 @@
 import streamlit as st
-import pandas as pd
+import joblib
+import json
 import numpy as np
-import pickle
-import plotly.express as px
-import plotly.graph_objects as go
-import gdown
-import os
+import warnings
+warnings.filterwarnings("ignore")
 
-# ── Download rf_model.pkl dari Google Drive kalau belum ada
-os.makedirs("model", exist_ok=True)
-if not os.path.exists("model/rf_model.pkl"):
-    with st.spinner("⏳ Mengunduh model dari Google Drive (±1 GB, mohon tunggu)..."):
-        gdown.download(
-            "https://drive.google.com/uc?id=1poyk0eid_PBIOFjGIOpxnmWP66qYLDsj",
-            "model/rf_model.pkl",
-            quiet=False
-        )
-
-# ── Konfigurasi halaman
+# ─────────────────────────────────────────────
+#  PAGE CONFIG
+# ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="Math Learning Analyzer",
+    page_title="Student Lifestyle Analyzer",
     page_icon="🎓",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="centered",
+    initial_sidebar_state="collapsed",
 )
 
-# ── Inject CSS
+# ─────────────────────────────────────────────
+#  CUSTOM CSS
+# ─────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+  /* ── Google Font ── */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
-    background-color: #F7F4EF;
-    color: #1a1a1a;
-}
+  html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-.stApp {
-    background-color: #F7F4EF;
-}
+  /* ── Background ── */
+  .stApp { background: #0f1117; }
 
-/* Hero */
-.hero-wrap {
-    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #52B788 100%);
-    border-radius: 24px;
-    padding: 52px 48px 44px;
-    margin-bottom: 36px;
+  /* ── Hero banner ── */
+  .hero {
+    background: linear-gradient(135deg, #1a1f35 0%, #0d1b2a 50%, #1a1235 100%);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
-}
-.hero-wrap::before {
+  }
+  .hero::before {
     content: '';
     position: absolute;
-    top: -60px; right: -60px;
-    width: 280px; height: 280px;
+    top: -60px; left: -60px;
+    width: 200px; height: 200px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-}
-.hero-wrap::after {
+    background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+  }
+  .hero::after {
     content: '';
     position: absolute;
-    bottom: -40px; left: 30%;
-    width: 180px; height: 180px;
+    bottom: -60px; right: -60px;
+    width: 200px; height: 200px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.04);
-}
-.hero-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.8rem;
-    color: #ffffff;
-    margin: 0 0 10px;
-    line-height: 1.15;
-}
-.hero-title em {
-    font-style: italic;
-    color: #95D5B2;
-}
-.hero-sub {
-    font-size: 1rem;
-    color: rgba(255,255,255,0.75);
-    margin: 0;
-    font-weight: 300;
-    letter-spacing: 0.01em;
-}
+    background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+  }
+  .hero h1 { font-size: 2rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; }
+  .hero p  { color: rgba(255,255,255,0.6); margin: 0.4rem 0 0; font-size: 0.95rem; }
 
-/* Stat cards */
-.stat-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 36px;
-    flex-wrap: wrap;
-}
-.stat-card {
-    flex: 1;
-    min-width: 150px;
-    background: #ffffff;
+  /* ── Section cards ── */
+  .card {
+    background: #1a1f2e;
+    border: 1px solid rgba(255,255,255,0.07);
     border-radius: 16px;
-    padding: 24px 20px;
-    border: 1px solid #E8E2D9;
-    position: relative;
-    overflow: hidden;
-}
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #2D6A4F, #52B788);
-    border-radius: 16px 16px 0 0;
-}
-.stat-icon { font-size: 1.5rem; margin-bottom: 8px; }
-.stat-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.9rem;
-    color: #1B4332;
-    line-height: 1;
-    margin-bottom: 4px;
-}
-.stat-label {
-    font-size: 0.78rem;
-    color: #888;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-/* Section header */
-.section-head {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.6rem;
-    color: #1B4332;
-    margin: 0 0 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #D8F3DC;
-}
-
-/* Input card */
-.input-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 32px;
-    border: 1px solid #E8E2D9;
-    margin-bottom: 28px;
-}
-
-/* Result cards */
-.result-cluster {
-    background: linear-gradient(135deg, #1B4332, #2D6A4F);
-    border-radius: 20px;
-    padding: 28px 32px;
-    color: white;
-    margin-bottom: 16px;
-}
-.result-cluster .r-label {
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 6px;
-}
-.result-cluster .r-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.7rem;
-    color: #95D5B2;
-    margin-bottom: 4px;
-}
-.result-cluster .r-sub { font-size: 0.9rem; color: rgba(255,255,255,0.75); }
-
-.result-kw {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 28px 32px;
-    border: 2px solid #52B788;
-    margin-bottom: 16px;
-}
-.result-kw .r-label {
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 6px;
-}
-.result-kw .r-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.5rem;
-    color: #1B4332;
-    margin-bottom: 4px;
-}
-.result-kw .conf-badge {
-    display: inline-block;
-    background: #D8F3DC;
-    color: #1B4332;
-    font-size: 0.8rem;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.4rem;
+  }
+  .card-title {
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 3px 12px;
-    border-radius: 20px;
-}
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 1rem;
+  }
 
-/* About cards */
-.about-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 24px 28px;
-    border: 1px solid #E8E2D9;
-    margin-bottom: 16px;
-}
-.about-card h4 {
-    font-family: 'DM Serif Display', serif;
-    color: #1B4332;
-    font-size: 1.15rem;
-    margin: 0 0 10px;
-}
-.about-card p, .about-card li {
-    font-size: 0.9rem;
-    color: #555;
-    line-height: 1.65;
-}
+  /* ── Sliders & number inputs ── */
+  .stSlider > div > div { background: rgba(99,102,241,0.15) !important; }
+  .stSlider [data-baseweb="slider"] [role="slider"] {
+    background: #6366f1 !important;
+    border: 2px solid #818cf8 !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .stSlider [data-baseweb="slider-track-highlight"] { background: #6366f1 !important; }
 
-/* Divider */
-.sec-divider {
+  /* ── Select boxes ── */
+  .stSelectbox [data-baseweb="select"] > div {
+    background: #252b3b !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+  }
+
+  /* ── Number input ── */
+  .stNumberInput input {
+    background: #252b3b !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+  }
+
+  /* ── Predict button ── */
+  div[data-testid="stButton"] > button {
+    width: 100%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
     border: none;
-    border-top: 2px solid #E8E2D9;
-    margin: 40px 0;
-}
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+  }
+  div[data-testid="stButton"] > button:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(99,102,241,0.45);
+  }
+  div[data-testid="stButton"] > button:active { transform: translateY(0px); }
 
-/* Streamlit overrides */
-div[data-testid="stForm"] {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-}
-.stSelectbox label, .stNumberInput label {
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    color: #444 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-}
-.stButton > button {
-    background: linear-gradient(135deg, #1B4332, #2D6A4F) !important;
+  /* ── Result boxes ── */
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
+  .result-box {
+    border-radius: 14px;
+    padding: 1.4rem 1.2rem;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .result-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.55; margin-bottom: 0.35rem; }
+  .result-value { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+  .result-sub   { font-size: 0.75rem; margin-top: 0.3rem; opacity: 0.6; }
+
+  /* Colour themes per result */
+  .box-sehat      { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #10b981; }
+  .box-berisiko   { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #f59e0b; }
+  .box-kurangtidur{ background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.3);  color: #ef4444; }
+  .box-high       { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #10b981; }
+  .box-medium     { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #f59e0b; }
+  .box-low        { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.3);  color: #ef4444; }
+
+  /* ── Probability bar ── */
+  .prob-row { margin-bottom: 0.55rem; }
+  .prob-label-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.78rem; margin-bottom: 0.22rem; color: rgba(255,255,255,0.7);
+  }
+  .prob-bar-bg {
+    background: rgba(255,255,255,0.07);
+    border-radius: 100px;
+    height: 7px;
+    overflow: hidden;
+  }
+  .prob-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.6s ease;
+  }
+
+  /* ── Tips ── */
+  .tip-item {
+    display: flex; align-items: flex-start; gap: 0.7rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 0.55rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.45;
+  }
+  .tip-icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* ── Metric pills (top stats) ── */
+  .pill-row {
+    display: flex; gap: 0.7rem; flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1.6rem;
+  }
+  .pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 100px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    white-space: nowrap;
+  }
+  .pill b { color: rgba(255,255,255,0.85); }
+
+  /* ── Section header ── */
+  .sec-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Hide default streamlit elements */
+  #MainMenu, footer, header { visibility: hidden; }
+  .block-container { padding-top: 1.5rem; padding-bottom: 3rem; max-width: 760px; }
+
+  /* Label text */
+  .stSlider label, .stSelectbox label, .stNumberInput label {
+    color: rgba(255,255,255,0.75) !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+  }
+  /* Value badge on slider */
+  .stSlider [data-testid="stThumbValue"] {
+    background: #6366f1 !important;
     color: white !important;
-    border: none !important;
-    border-radius: 12px !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    padding: 14px 0 !important;
-    width: 100% !important;
-    transition: opacity 0.2s !important;
-}
-.stButton > button:hover { opacity: 0.88 !important; }
+    border-radius: 6px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+  }
 
-.stFileUploader {
-    background: #ffffff !important;
-    border-radius: 16px !important;
-    border: 2px dashed #D8F3DC !important;
-    padding: 12px !important;
-}
+  /* Divider */
+  hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 1.2rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Load model
-@st.cache_resource
+
+# ─────────────────────────────────────────────
+#  LOAD MODELS
+# ─────────────────────────────────────────────
+@st.cache_resource(show_spinner=False)
 def load_models():
-    with open("model/kmeans_model.pkl", "rb") as f:
-        kmeans = pickle.load(f)
-    with open("model/rf_model.pkl", "rb") as f:
-        rf = pickle.load(f)
-    with open("model/scaler.pkl", "rb") as f:
-        scaler = pickle.load(f)
-    with open("model/label_encoders.pkl", "rb") as f:
-        le_dict = pickle.load(f)
-    with open("model/label_encoder_target.pkl", "rb") as f:
-        le_target = pickle.load(f)
-    with open("model/metadata.pkl", "rb") as f:
-        meta = pickle.load(f)
-    return kmeans, rf, scaler, le_dict, le_target, meta
+    model_clf      = joblib.load("model/model_clf.pkl")
+    model_cluster  = joblib.load("model/model_cluster.pkl")
+    scaler_clf     = joblib.load("model/scaler_clf.pkl")
+    scaler_cluster = joblib.load("model/scaler_cluster.pkl")
+    le_performa    = joblib.load("model/le_performa.pkl")
+    le_dict        = joblib.load("model/le_dict.pkl")
+    with open("model/cluster_names.json")    as f: cluster_names    = json.load(f)
+    with open("model/streamlit_features.json") as f: streamlit_features = json.load(f)
+    with open("model/all_features.json")    as f: all_features     = json.load(f)
+    return model_clf, model_cluster, scaler_clf, scaler_cluster, \
+           le_performa, le_dict, cluster_names, streamlit_features, all_features
 
-kmeans, rf_model, scaler, le_dict, le_target, meta = load_models()
+model_clf, model_cluster, scaler_clf, scaler_cluster, \
+le_performa, le_dict, cluster_names, streamlit_features, all_features = load_models()
 
-# ════════════════════════════════════════
-# HERO
-# ════════════════════════════════════════
+
+# ─────────────────────────────────────────────
+#  HELPER
+# ─────────────────────────────────────────────
+CLUSTER_CSS = {"Sehat": "sehat", "Berisiko": "berisiko", "Kurang Tidur": "kurangtidur"}
+PERF_CSS    = {"High": "high", "Medium": "medium", "Low": "low"}
+PERF_ID     = {"High": "🟢 Tinggi", "Medium": "🟡 Sedang", "Low": "🔴 Rendah"}
+CLUSTER_ID  = {"Sehat": "🌿 Sehat", "Berisiko": "⚠️ Berisiko", "Kurang Tidur": "😴 Kurang Tidur"}
+
+BAR_COLORS = {
+    "High":   "linear-gradient(90deg,#10b981,#34d399)",
+    "Medium": "linear-gradient(90deg,#f59e0b,#fbbf24)",
+    "Low":    "linear-gradient(90deg,#ef4444,#f87171)",
+}
+
+def predict(inputs: dict):
+    """Run clustering + classification given a flat dict of raw values."""
+    # ── Cluster ──
+    arr_clust = np.array([[inputs[f] for f in streamlit_features]])
+    arr_clust_scaled = scaler_cluster.transform(arr_clust)
+    clust_id  = str(model_cluster.predict(arr_clust_scaled)[0])
+    clust_name = cluster_names.get(clust_id, f"Cluster {clust_id}")
+
+    # ── Classification – build full feature vector ──
+    arr_clf = np.zeros((1, len(all_features)))
+    for i, feat in enumerate(all_features):
+        if feat in inputs:
+            arr_clf[0, i] = inputs[feat]
+        # leave unknown as 0 (median-like fallback)
+    arr_clf_scaled = scaler_clf.transform(arr_clf)
+    clf_enc   = model_clf.predict(arr_clf_scaled)[0]
+    clf_proba = model_clf.predict_proba(arr_clf_scaled)[0]
+    clf_name  = le_performa.inverse_transform([clf_enc])[0]
+    proba_map = {le_performa.classes_[i]: float(p) for i, p in enumerate(clf_proba)}
+    return clust_name, clf_name, proba_map
+
+
+def tips_for(cluster: str, perf: str):
+    tips = {
+        "Sehat": {
+            "High":   ["Pertahankan rutinitas belajarmu! 🏆", "Waktu tidur sudah ideal — jaga konsistensinya 💤",
+                       "Kurangi sedikit media sosial agar fokus makin tajam 📵"],
+            "Medium": ["Coba tingkatkan jam belajar 30–60 menit per hari 📚",
+                       "Rutinitas pagi yang konsisten bisa mendongkrak produktivitas ☀️",
+                       "Pertahankan pola tidur sehatmu sebagai fondasi 💪"],
+            "Low":    ["Gaya hidupmu sudah baik! Periksa strategi belajarmu 🔍",
+                       "Coba teknik Pomodoro untuk sesi belajar yang lebih efektif ⏱️",
+                       "Diskusikan kesulitan belajar dengan dosen atau teman 🤝"],
+        },
+        "Berisiko": {
+            "High":   ["Performa bagus tapi gaya hidup berisiko — waspada burnout! ⚡",
+                       "Tambah 1–2 jam tidur per malam untuk keberlangsungan jangka panjang 🌙",
+                       "Kurangi screen time dan sisipkan istirahat aktif 🚶"],
+            "Medium": ["Perbaiki pola tidur (target 7–8 jam) untuk meningkatkan konsentrasi 🛌",
+                       "Batasi media sosial di jam belajar dengan mode fokus 📴",
+                       "Olahraga ringan 20 menit/hari terbukti meningkatkan daya ingat 🏃"],
+            "Low":    ["Prioritaskan perbaikan gaya hidup sebelum memacu belajar lebih keras ❤️",
+                       "Konsultasi dengan konselor akademik atau tenaga kesehatan 🏥",
+                       "Mulai dari target kecil: tidur lebih awal 30 menit saja 🎯"],
+        },
+        "Kurang Tidur": {
+            "High":   ["Prestasi tinggi meski kurang tidur — tapi ini tidak sustainable! ⏳",
+                       "Kurang tidur kronis berdampak pada memori jangka panjang 🧠",
+                       "Coba tidur lebih awal satu jam — performa bisa naik lagi 💡"],
+            "Medium": ["Kurang tidur adalah hambatan utama fokusmu saat ini 😴",
+                       "Target 7–8 jam tidur bisa meningkatkan nilai secara signifikan 📈",
+                       "Hindari layar 1 jam sebelum tidur untuk kualitas tidur lebih baik 📱"],
+            "Low":    ["Tidur yang cukup adalah intervensi paling penting untukmu sekarang 🌟",
+                       "Kurang tidur menurunkan kemampuan belajar hingga 40% — perbaiki dulu 💤",
+                       "Buat jadwal tidur-bangun yang konsisten bahkan di akhir pekan 📅"],
+        },
+    }
+    return tips.get(cluster, {}).get(perf, ["Terus semangat dan jaga kesehatanmu! 💪"])
+
+
+# ─────────────────────────────────────────────
+#  HERO
+# ─────────────────────────────────────────────
 st.markdown("""
-<div class="hero-wrap">
-    <div class="hero-title">Math Learning <em>Analyzer</em></div>
-    <p class="hero-sub">Clustering perilaku belajar & prediksi keyword materi mahasiswa · K-Means + Random Forest · CRISP-DM</p>
+<div class="hero">
+  <h1>🎓 Student Lifestyle Analyzer</h1>
+  <p>Analisis pola hidup & prediksi performa akademikmu dengan Machine Learning</p>
 </div>
 """, unsafe_allow_html=True)
 
-# ════════════════════════════════════════
-# STAT CARDS
-# ════════════════════════════════════════
-acc = meta.get('accuracy', 0)
-sil = meta.get('silhouette_score', 0)
-k   = meta.get('optimal_k', '?')
-
-st.markdown(f"""
-<div class="stat-row">
-    <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div class="stat-val">9.546</div>
-        <div class="stat-label">Total Records</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon">🧩</div>
-        <div class="stat-val">{k}</div>
-        <div class="stat-label">Optimal Clusters</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon">🎯</div>
-        <div class="stat-val">{acc*100:.1f}%</div>
-        <div class="stat-label">RF Accuracy</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon">📐</div>
-        <div class="stat-val">{sil:.3f}</div>
-        <div class="stat-label">Silhouette Score</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon">🌍</div>
-        <div class="stat-val">Fairness</div>
-        <div class="stat-label">Fitur country dihapus</div>
-    </div>
+st.markdown("""
+<div class="pill-row">
+  <span class="pill">🤖 <b>Random Forest</b> Classifier</span>
+  <span class="pill">📊 <b>K-Means</b> Clustering (k=3)</span>
+  <span class="pill">📦 <b>CRISP-DM</b> Framework</span>
 </div>
 """, unsafe_allow_html=True)
 
-# ════════════════════════════════════════
-# SEKSI 1 — PREDIKSI
-# ════════════════════════════════════════
-st.markdown('<div class="section-head">🤖 Prediksi Data Mahasiswa</div>', unsafe_allow_html=True)
-st.markdown('<div class="input-card">', unsafe_allow_html=True)
 
-feature_cols = [c for c in meta['feature_cols'] if c != 'cluster_label']
+# ─────────────────────────────────────────────
+#  INPUT FORM
+# ─────────────────────────────────────────────
+with st.container():
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
 
-with st.form("pred_form"):
-    c1, c2, c3 = st.columns(3)
-    input_data = {}
+    # ── Row 1: numeric basics ──
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        age = st.number_input("Usia (tahun)", min_value=17, max_value=35, value=20, step=1)
+    with col2:
+        gender = st.selectbox("Jenis Kelamin", ["Male", "Female", "Other"])
+    with col3:
+        part_time_job = st.selectbox("Part-time Job", ["No", "Yes"])
 
-    col_map = {0: c1, 1: c2, 2: c3}
-    for i, feat in enumerate(feature_cols):
-        with col_map[i % 3]:
-            if feat in meta.get('cat_features', []):
-                options = list(le_dict[feat].classes_) if feat in le_dict else []
-                val = st.selectbox(feat, options, key=f"sel_{feat}")
-                input_data[feat] = le_dict[feat].transform([val])[0] if feat in le_dict else 0
-            else:
-                input_data[feat] = st.number_input(feat, min_value=0, max_value=99999, value=100, key=f"num_{feat}")
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown('<div class="sec-header">⏰ Kebiasaan Harian</div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    submitted = st.form_submit_button("🔍 Analisis Sekarang")
+    sleep_hours = st.slider("🛌 Jam Tidur per Hari", min_value=3.0, max_value=12.0, value=7.0, step=0.5)
+    study_hours = st.slider("📚 Jam Belajar per Hari", min_value=0.0, max_value=12.0, value=4.0, step=0.5)
+    social_media_hours = st.slider("📱 Jam Media Sosial per Hari", min_value=0.0, max_value=10.0, value=2.0, step=0.5)
+    netflix_hours = st.slider("🎬 Jam Netflix/Streaming per Hari", min_value=0.0, max_value=8.0, value=1.5, step=0.5)
+    attendance_pct = st.slider("📅 Persentase Kehadiran (%)", min_value=40, max_value=100, value=85, step=1)
 
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown('<div class="sec-header">🏃 Kesehatan & Lingkungan</div>', unsafe_allow_html=True)
 
-if submitted:
-    input_df = pd.DataFrame([input_data])
-    for col in feature_cols:
-        if col not in input_df.columns:
-            input_df[col] = 0
-    input_df = input_df[feature_cols].astype(float)
+    col4, col5 = st.columns(2)
+    with col4:
+        exercise_freq = st.slider("🏋️ Frekuensi Olahraga (hari/minggu)", 0, 7, 3)
+        mental_health = st.slider("🧠 Skor Kesehatan Mental (1–10)", 1, 10, 7)
+    with col5:
+        diet_quality   = st.selectbox("🥗 Kualitas Diet",       ["Good", "Fair", "Poor"])
+        internet_qual  = st.selectbox("🌐 Kualitas Internet",   ["Good", "Average", "Poor"])
 
-    input_scaled = scaler.transform(input_df)
-    cluster = int(kmeans.predict(input_scaled)[0])
-    cluster_name = meta.get('cluster_names', {}).get(cluster, f"Cluster {cluster}")
+    col6, col7 = st.columns(2)
+    with col6:
+        parent_edu     = st.selectbox("🎓 Pendidikan Orang Tua", ["Master", "Bachelor", "High School"])
+    with col7:
+        extracurricular = st.selectbox("🎭 Ekstrakurikuler",     ["Yes", "No"])
 
-    input_clf = np.append(input_scaled, cluster).reshape(1, -1)
-    grade_pred  = rf_model.predict(input_clf)[0]
-    grade_proba = rf_model.predict_proba(input_clf)[0]
-    grade_label = le_target.inverse_transform([grade_pred])[0]
-    confidence  = grade_proba.max() * 100
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Hasil
-    r1, r2 = st.columns(2)
-    with r1:
-        st.markdown(f"""
-        <div class="result-cluster">
-            <div class="r-label">Tipe Pelajar (Cluster)</div>
-            <div class="r-val">Cluster {cluster}</div>
-            <div class="r-sub">{cluster_name}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with r2:
-        st.markdown(f"""
-        <div class="result-kw">
-            <div class="r-label">Prediksi Keyword Materi</div>
-            <div class="r-val">{grade_label}</div>
-            <span class="conf-badge">Confidence {confidence:.1f}%</span>
-        </div>
-        """, unsafe_allow_html=True)
+    # ── Predict button ──
+    predict_btn = st.button("🔍 Analisis Sekarang", use_container_width=True)
 
-    # Top 5 chart
-    top5_idx    = grade_proba.argsort()[-5:][::-1]
-    top5_labels = le_target.inverse_transform(top5_idx)
-    top5_probs  = grade_proba[top5_idx] * 100
 
-    fig = go.Figure(go.Bar(
-        x=top5_probs,
-        y=top5_labels,
-        orientation='h',
-        marker=dict(
-            color=top5_probs,
-            colorscale=[[0, '#D8F3DC'], [1, '#1B4332']],
-            showscale=False
-        ),
-        text=[f"{p:.1f}%" for p in top5_probs],
-        textposition='outside',
-    ))
-    fig.update_layout(
-        title="Top 5 Kemungkinan Keyword",
-        xaxis_title="Probabilitas (%)",
-        yaxis=dict(autorange="reversed"),
-        plot_bgcolor="#ffffff",
-        paper_bgcolor="#ffffff",
-        font=dict(family="DM Sans", size=13),
-        margin=dict(l=20, r=60, t=50, b=20),
-        height=280,
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# ─────────────────────────────────────────────
+#  PREDICTION
+# ─────────────────────────────────────────────
+if predict_btn:
+    # Helper to encode a category value safely
+    def safe_encode(le, val):
+        classes = list(le.classes_)
+        return classes.index(val) if val in classes else 0
 
-st.markdown('<hr class="sec-divider">', unsafe_allow_html=True)
+    inputs = {
+        # numeric
+        "age":                         float(age),
+        "study_hours_per_day":         study_hours,
+        "social_media_hours":          social_media_hours,
+        "netflix_hours":               netflix_hours,
+        "attendance_percentage":       float(attendance_pct),
+        "sleep_hours":                 sleep_hours,
+        "exercise_frequency":          float(exercise_freq),
+        "mental_health_rating":        float(mental_health),
+        # encoded categoricals
+        "student_id_enc":              0,   # unknown new student → default 0
+        "gender_enc":                  safe_encode(le_dict["gender"],                       gender),
+        "part_time_job_enc":           safe_encode(le_dict["part_time_job"],                part_time_job),
+        "diet_quality_enc":            safe_encode(le_dict["diet_quality"],                 diet_quality),
+        "parental_education_level_enc":safe_encode(le_dict["parental_education_level"],     parent_edu),
+        "internet_quality_enc":        safe_encode(le_dict["internet_quality"],             internet_qual),
+        "extracurricular_participation_enc": safe_encode(le_dict["extracurricular_participation"], extracurricular),
+    }
 
-# ════════════════════════════════════════
-# SEKSI 2 — DATASET OVERVIEW
-# ════════════════════════════════════════
-st.markdown('<div class="section-head">📊 Dataset Overview</div>', unsafe_allow_html=True)
+    cluster_name, perf_name, proba_map = predict(inputs)
 
-uploaded = st.file_uploader("Upload file CSV dataset kamu untuk analisis lebih lanjut", type="csv")
-if uploaded:
-    df = pd.read_csv(uploaded)
-    st.success(f"✅ Dataset dimuat: **{df.shape[0]:,} baris** × **{df.shape[1]} kolom**")
+    cluster_css = CLUSTER_CSS.get(cluster_name, "berisiko")
+    perf_css    = PERF_CSS.get(perf_name, "medium")
 
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Total Records",    f"{df.shape[0]:,}")
-    m2.metric("Jumlah Fitur",     df.shape[1])
-    m3.metric("Missing Values",   df.isnull().sum().sum())
-    m4.metric("Duplikat",         df.duplicated().sum())
+    # ── Result header ──
+    st.markdown("""<div style="height:1.2rem"></div>""", unsafe_allow_html=True)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">🎯 Hasil Analisis</div>', unsafe_allow_html=True)
 
-    tab1, tab2, tab3 = st.tabs(["📋 Pratinjau Data", "📈 Statistik", "📊 Distribusi"])
-
-    with tab1:
-        st.dataframe(df.head(20), use_container_width=True)
-
-    with tab2:
-        st.dataframe(df.describe().round(2), use_container_width=True)
-
-    with tab3:
-        col_sel = st.selectbox("Pilih kolom:", df.columns.tolist())
-        if df[col_sel].dtype in [np.float64, np.int64]:
-            fig = px.histogram(df, x=col_sel, nbins=30,
-                               title=f"Distribusi {col_sel}",
-                               color_discrete_sequence=["#2D6A4F"])
-        else:
-            vc = df[col_sel].value_counts().reset_index()
-            vc.columns = [col_sel, "count"]
-            fig = px.bar(vc, x=col_sel, y="count",
-                         title=f"Distribusi {col_sel}",
-                         color_discrete_sequence=["#2D6A4F"])
-        fig.update_layout(
-            plot_bgcolor="#ffffff", paper_bgcolor="#ffffff",
-            font=dict(family="DM Sans"), margin=dict(t=50, b=20)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-else:
-    st.info("Upload file CSV untuk melihat analisis dataset secara interaktif.")
-
-st.markdown('<hr class="sec-divider">', unsafe_allow_html=True)
-
-# ════════════════════════════════════════
-# SEKSI 3 — VISUALISASI HASIL
-# ════════════════════════════════════════
-st.markdown('<div class="section-head">📈 Visualisasi Hasil Analisis</div>', unsafe_allow_html=True)
-
-viz_files = [
-    ("analisis_cluster_grade.png", "Analisis Cluster vs Grade"),
-    ("cluster_pca_2d.png",         "Visualisasi Cluster (PCA 2D)"),
-    ("cluster_profile_heatmap.png","Profil Cluster Heatmap"),
-    ("feature_importance.png",     "Feature Importance"),
-    ("grade_per_cluster.png",      "Distribusi Grade per Cluster"),
-    ("perbandingan_model.png",     "Perbandingan Model"),
-]
-
-available = [(f, t) for f, t in viz_files if os.path.exists(f)]
-missing   = [(f, t) for f, t in viz_files if not os.path.exists(f)]
-
-if available:
-    for i in range(0, len(available), 2):
-        cols = st.columns(2)
-        for j, (fname, title) in enumerate(available[i:i+2]):
-            with cols[j]:
-                st.caption(title)
-                st.image(fname, use_container_width=True)
-else:
-    for fname, title in missing:
-        st.warning(f"**{title}** — file `{fname}` belum tersedia. Jalankan notebook terlebih dahulu.")
-
-st.markdown('<hr class="sec-divider">', unsafe_allow_html=True)
-
-# ════════════════════════════════════════
-# SEKSI 4 — ABOUT
-# ════════════════════════════════════════
-st.markdown('<div class="section-head">ℹ️ Tentang Proyek</div>', unsafe_allow_html=True)
-
-a1, a2 = st.columns(2)
-with a1:
-    st.markdown("""
-    <div class="about-card">
-        <h4>📦 Dataset</h4>
-        <ul>
-            <li><b>Nama:</b> Mathematics Learning in Higher Education</li>
-            <li><b>Sumber:</b> UCI ML Repository (ID: 1031)</li>
-            <li><b>Jumlah Data:</b> 9.546 records</li>
-            <li><b>Fitur:</b> Student ID, Question ID, Type of Answer, Question Level, Topic, Subtopic</li>
-            <li><b>Target:</b> Keywords</li>
-            <li><b>Catatan:</b> Fitur <code>country</code> dihapus (fairness-aware)</li>
-        </ul>
-    </div>
-    <div class="about-card">
-        <h4>🔬 Metode</h4>
-        <p><b>K-Means Clustering</b> — menemukan kelompok mahasiswa berdasarkan pola belajar tanpa label. Optimal k dipilih via Silhouette Score.</p>
-        <p><b>Random Forest Classification</b> — memprediksi keyword materi menggunakan ensemble decision tree. Fitur cluster_label ditambahkan sebagai fitur tambahan.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with a2:
     st.markdown(f"""
-    <div class="about-card">
-        <h4>📊 Performa Model</h4>
-        <ul>
-            <li><b>Optimal K:</b> {meta.get('optimal_k', '?')}</li>
-            <li><b>Silhouette Score:</b> {meta.get('silhouette_score', 0):.4f}</li>
-            <li><b>RF Accuracy:</b> {meta.get('accuracy', 0)*100:.2f}%</li>
-            <li><b>F1-Macro:</b> {meta.get('f1_macro', 0):.4f}</li>
-        </ul>
-    </div>
-    <div class="about-card">
-        <h4>🧭 Framework & Info</h4>
-        <ul>
-            <li><b>Framework:</b> CRISP-DM</li>
-            <li><b>Mata Kuliah:</b> Data Mining</li>
-            <li><b>Semester:</b> Genap</li>
-            <li><b>Jenis:</b> UAS / Ujian Akhir Semester</li>
-        </ul>
-        <p style="margin-top:12px"><b>Anggota Kelompok:</b><br>
-        · Nama 1 (NIM)<br>· Nama 2 (NIM)<br>· Nama 3 (NIM)</p>
+    <div class="result-grid">
+      <div class="result-box box-{cluster_css}">
+        <div class="result-label">Kelompok Gaya Hidup</div>
+        <div class="result-value">{CLUSTER_ID.get(cluster_name, cluster_name)}</div>
+        <div class="result-sub">K-Means Clustering</div>
+      </div>
+      <div class="result-box box-{perf_css}">
+        <div class="result-label">Prediksi Performa Akademik</div>
+        <div class="result-value">{PERF_ID.get(perf_name, perf_name)}</div>
+        <div class="result-sub">Random Forest Classifier</div>
+      </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # ── Probability bars ──
+    st.markdown('<div class="sec-header" style="margin-top:0.8rem">📊 Distribusi Probabilitas Performa</div>',
+                unsafe_allow_html=True)
+    label_map = {"High": "🟢 Tinggi", "Medium": "🟡 Sedang", "Low": "🔴 Rendah"}
+    for label in ["High", "Medium", "Low"]:
+        pct = proba_map.get(label, 0) * 100
+        bar_color = BAR_COLORS[label]
+        st.markdown(f"""
+        <div class="prob-row">
+          <div class="prob-label-row">
+            <span>{label_map[label]}</span>
+            <span style="font-weight:700">{pct:.1f}%</span>
+          </div>
+          <div class="prob-bar-bg">
+            <div class="prob-bar-fill" style="width:{pct:.1f}%;background:{bar_color}"></div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # ── Input summary mini-card ──
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📌 Ringkasan Input</div>', unsafe_allow_html=True)
+    summary_cols = st.columns(4)
+    summary_data = [
+        ("🛌 Tidur",       f"{sleep_hours} jam"),
+        ("📚 Belajar",     f"{study_hours} jam"),
+        ("📱 Sosmed",      f"{social_media_hours} jam"),
+        ("📅 Kehadiran",   f"{attendance_pct}%"),
+        ("🏋️ Olahraga",   f"{exercise_freq}×/minggu"),
+        ("🧠 Mental",      f"{mental_health}/10"),
+        ("🎬 Netflix",     f"{netflix_hours} jam"),
+        ("🥗 Diet",        diet_quality),
+    ]
+    for i, (label, val) in enumerate(summary_data):
+        with summary_cols[i % 4]:
+            st.markdown(f"""
+            <div style="text-align:center;padding:0.6rem 0.3rem;background:rgba(255,255,255,0.03);
+                 border-radius:10px;margin-bottom:0.5rem;border:1px solid rgba(255,255,255,0.06)">
+              <div style="font-size:0.7rem;opacity:0.5;margin-bottom:0.15rem">{label}</div>
+              <div style="font-size:0.95rem;font-weight:700;color:#e2e8f0">{val}</div>
+            </div>
+            """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # ── Tips ──
+    tips = tips_for(cluster_name, perf_name)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">💡 Rekomendasi Personal</div>', unsafe_allow_html=True)
+    icons = ["✅", "💡", "🎯", "⚡", "🌟"]
+    for i, tip in enumerate(tips):
+        st.markdown(f"""
+        <div class="tip-item">
+          <span class="tip-icon">{icons[i % len(icons)]}</span>
+          <span>{tip}</span>
+        </div>
+        """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # ── Cluster description ──
+    cluster_desc = {
+        "Sehat": ("Kamu memiliki pola hidup yang **seimbang** — tidur cukup, aktif belajar, "
+                  "dan tidak terlalu banyak menghabiskan waktu di layar. Pertahankan!"),
+        "Berisiko": ("Pola hidupmu menunjukkan beberapa **faktor risiko** — mungkin jam tidur kurang, "
+                     "terlalu banyak screen time, atau kehadiran yang perlu ditingkatkan. Yuk diperbaiki!"),
+        "Kurang Tidur": ("Jam tidurmu **di bawah rata-rata** yang sehat. Kurang tidur secara kronik "
+                         "berdampak besar pada konsentrasi, memori, dan performa akademik."),
+    }
+    st.markdown(f"""
+    <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);
+         border-radius:12px;padding:1rem 1.2rem;font-size:0.87rem;color:rgba(255,255,255,0.75);line-height:1.6">
+      <b style="color:#818cf8">Tentang kelompok "{cluster_name}"</b><br>
+      {cluster_desc.get(cluster_name, "")}
+    </div>
+    """, unsafe_allow_html=True)
+
+else:
+    # Placeholder before prediction
+    st.markdown("""
+    <div style="text-align:center;padding:2.5rem 1rem;color:rgba(255,255,255,0.25)">
+      <div style="font-size:3rem;margin-bottom:0.6rem">🔮</div>
+      <div style="font-size:0.9rem">Isi form di atas lalu klik <b style="color:rgba(255,255,255,0.45)">Analisis Sekarang</b></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ── Footer ──
+st.markdown("""
+<div style="text-align:center;padding:2rem 0 0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.18)">
+  Student Lifestyle Analyzer · Random Forest + K-Means · Dataset: Kaggle Student Habits
+</div>
+""", unsafe_allow_html=True)
