@@ -425,11 +425,6 @@ with st.container():
         diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik", "Cukup", "Kurang"])
     with col5:
         mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
-        st.markdown(
-            f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
-            f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
-            unsafe_allow_html=True
-        )
         internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik", "Sedang", "Buruk"])
 
     col6, col7 = st.columns(2)
