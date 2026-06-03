@@ -81,6 +81,14 @@ st.markdown("""
   }
   .stSlider [data-baseweb="slider-track-highlight"] { background: #4a7fd4 !important; }
 
+  /* ── Slider wrapper box ── */
+  div[data-testid="stSlider"] {
+    background: #dceaf9 !important;
+    border: 1px solid rgba(100,140,210,0.3) !important;
+    border-radius: 10px !important;
+    padding: 0.6rem 0.9rem 0.5rem !important;
+  }
+
   /* ── Select boxes ── */
   .stSelectbox [data-baseweb="select"] > div {
     background: #dceaf9 !important;
@@ -354,9 +362,9 @@ st.markdown("""
 
 st.markdown("""
 <div class="pill-row">
-  <span class="pill"> <b>Random Forest</b> Classifier</span>
-  <span class="pill"><b>K-Means</b> Clustering (k=3)</span>
-  <span class="pill"> <b>framework</b> <b>CRISP-DM</b></span>
+  <span class="pill">🤖 <b>Random Forest</b> Classifier</span>
+  <span class="pill">📊 <b>K-Means</b> Pengelompokan (k=3)</span>
+  <span class="pill">📦 Kerangka <b>CRISP-DM</b></span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -388,15 +396,15 @@ with st.container():
     col4, col5 = st.columns(2)
     with col4:
         exercise_freq = st.slider("🏋️ Frekuensi Olahraga (hari/minggu)", 0, 7, 3)
+        diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik", "Cukup", "Kurang"])
+    with col5:
         mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
         st.markdown(
             f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
             f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
             unsafe_allow_html=True
         )
-    with col5:
-        diet_quality  = st.selectbox("🥗 Kualitas Pola Makan",  ["Baik", "Cukup", "Kurang"])
-        internet_qual = st.selectbox("🌐 Kualitas Internet",     ["Baik", "Sedang", "Buruk"])
+        internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik", "Sedang", "Buruk"])
 
     col6, col7 = st.columns(2)
     with col6:
