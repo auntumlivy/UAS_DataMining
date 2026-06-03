@@ -395,8 +395,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-with st.container():
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="card">', unsafe_allow_html=True)
+if True:
     st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
