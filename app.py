@@ -5,9 +5,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
-# ─────────────────────────────────────────────
-#  PAGE CONFIG
-# ─────────────────────────────────────────────
+
 st.set_page_config(
     page_title="Student Lifestyle Analyzer",
     page_icon="🎓",
@@ -15,9 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ─────────────────────────────────────────────
-#  CUSTOM CSS
-# ─────────────────────────────────────────────
+
 st.markdown("""
 <style>
   /* ── Google Font ── */
@@ -232,9 +228,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ─────────────────────────────────────────────
-#  LOAD MODELS
-# ─────────────────────────────────────────────
+
 @st.cache_resource(show_spinner=False)
 def load_models():
     model_clf      = joblib.load("model/model_clf.pkl")
@@ -253,9 +247,7 @@ model_clf, model_cluster, scaler_clf, scaler_cluster, \
 le_performa, le_dict, cluster_names, streamlit_features, all_features = load_models()
 
 
-# ─────────────────────────────────────────────
-#  HELPER
-# ─────────────────────────────────────────────
+
 CLUSTER_CSS = {"Sehat": "sehat", "Berisiko": "berisiko", "Kurang Tidur": "kurangtidur"}
 PERF_CSS    = {"High": "high", "Medium": "medium", "Low": "low"}
 PERF_ID     = {"High": "🟢 Tinggi", "Medium": "🟡 Sedang", "Low": "🔴 Rendah"}
@@ -327,9 +319,7 @@ def tips_for(cluster: str, perf: str):
     return tips.get(cluster, {}).get(perf, ["Terus semangat dan jaga kesehatanmu! 💪"])
 
 
-# ─────────────────────────────────────────────
-#  HERO
-# ─────────────────────────────────────────────
+
 st.markdown("""
 <div class="hero">
   <h1>🎓 Student Lifestyle Analyzer</h1>
@@ -346,9 +336,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ─────────────────────────────────────────────
-#  INPUT FORM
-# ─────────────────────────────────────────────
 with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
@@ -394,9 +381,7 @@ with st.container():
     predict_btn = st.button("🔍 Analisis Sekarang", use_container_width=True)
 
 
-# ─────────────────────────────────────────────
-#  PREDICTION
-# ─────────────────────────────────────────────
+
 if predict_btn:
     # Helper to encode a category value safely
     def safe_encode(le, val):
@@ -448,7 +433,7 @@ if predict_btn:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Probability bars ──
+  
     st.markdown('<div class="sec-header" style="margin-top:0.8rem">📊 Distribusi Probabilitas Performa</div>',
                 unsafe_allow_html=True)
     label_map = {"High": "🟢 Tinggi", "Medium": "🟡 Sedang", "Low": "🔴 Rendah"}
@@ -469,7 +454,7 @@ if predict_btn:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Input summary mini-card ──
+  
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📌 Ringkasan Input</div>', unsafe_allow_html=True)
     summary_cols = st.columns(4)
@@ -494,7 +479,7 @@ if predict_btn:
             """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Tips ──
+
     tips = tips_for(cluster_name, perf_name)
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">💡 Rekomendasi Personal</div>', unsafe_allow_html=True)
@@ -508,7 +493,7 @@ if predict_btn:
         """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Cluster description ──
+   
     cluster_desc = {
         "Sehat": ("Kamu memiliki pola hidup yang **seimbang** — tidur cukup, aktif belajar, "
                   "dan tidak terlalu banyak menghabiskan waktu di layar. Pertahankan!"),
@@ -534,7 +519,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-# ── Footer ──
+# Footer
 st.markdown("""
 <div style="text-align:center;padding:2rem 0 0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.18)">
   Student Lifestyle Analyzer · Random Forest + K-Means · Dataset: Kaggle Student Habits
