@@ -71,15 +71,48 @@ st.markdown("""
     margin-bottom: 1rem;
   }
 
-  /* ── Sliders & number inputs ── */
+  /* ── Sliders ── */
   .stSlider > div > div { background: rgba(100,140,210,0.15) !important; }
+
+  /* thumb (bulatan) */
   .stSlider [data-baseweb="slider"] [role="slider"] {
     background: #4a7fd4 !important;
     border: 2px solid #7aaae8 !important;
     width: 18px !important;
     height: 18px !important;
   }
-  .stSlider [data-baseweb="slider-track-highlight"] { background: #4a7fd4 !important; }
+
+  /* track kiri (highlight) */
+  .stSlider [data-baseweb="slider-track-highlight"],
+  [data-baseweb="slider"] [data-testid="stSliderTrackHighlight"],
+  div[class*="TrackHighlight"] {
+    background: #4a7fd4 !important;
+    border-radius: 100px !important;
+  }
+
+  /* track keseluruhan */
+  [data-baseweb="slider"] > div:first-child {
+    background: rgba(100,140,210,0.25) !important;
+    border-radius: 100px !important;
+    height: 5px !important;
+  }
+
+  /* angka value di atas thumb */
+  .stSlider [data-testid="stThumbValue"] {
+    color: #1a3560 !important;
+    background: #c5d8f5 !important;
+    border: 1px solid rgba(74,127,212,0.3) !important;
+    border-radius: 6px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* angka min/max di ujung slider */
+  .stSlider [data-testid="stTickBarMin"],
+  .stSlider [data-testid="stTickBarMax"] {
+    color: #5577aa !important;
+    font-size: 0.75rem !important;
+  }
 
   /* ── Slider wrapper box ── */
   div[data-testid="stSlider"] {
@@ -234,14 +267,7 @@ st.markdown("""
     font-size: 0.85rem !important;
     font-weight: 500 !important;
   }
-  /* Value badge on slider */
-  .stSlider [data-testid="stThumbValue"] {
-    background: #4a7fd4 !important;
-    color: white !important;
-    border-radius: 6px !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-  }
+
 
   /* Divider */
   hr { border: none; border-top: 1px solid rgba(100,140,210,0.2); margin: 1.2rem 0; }
@@ -399,6 +425,11 @@ with st.container():
         diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik", "Cukup", "Kurang"])
     with col5:
         mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
+        st.markdown(
+            f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
+            f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
+            unsafe_allow_html=True
+        )
         internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik", "Sedang", "Buruk"])
 
     col6, col7 = st.columns(2)
