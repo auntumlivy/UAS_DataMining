@@ -22,12 +22,12 @@ st.markdown("""
   html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
   /* ── Background ── */
-  .stApp { background: #0f1117; }
+  .stApp { background: #e8f0fa; }
 
   /* ── Hero banner ── */
   .hero {
-    background: linear-gradient(135deg, #1a1f35 0%, #0d1b2a 50%, #1a1235 100%);
-    border: 1px solid rgba(99,102,241,0.3);
+    background: linear-gradient(135deg, #c5d8f5 0%, #d6e8ff 50%, #c2d4f0 100%);
+    border: 1px solid rgba(100,140,210,0.35);
     border-radius: 20px;
     padding: 2.5rem 2rem;
     text-align: center;
@@ -41,7 +41,7 @@ st.markdown("""
     top: -60px; left: -60px;
     width: 200px; height: 200px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(100,140,220,0.18) 0%, transparent 70%);
   }
   .hero::after {
     content: '';
@@ -49,15 +49,15 @@ st.markdown("""
     bottom: -60px; right: -60px;
     width: 200px; height: 200px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(120,160,230,0.18) 0%, transparent 70%);
   }
-  .hero h1 { font-size: 2rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; }
-  .hero p  { color: rgba(255,255,255,0.6); margin: 0.4rem 0 0; font-size: 0.95rem; }
+  .hero h1 { font-size: 2rem; font-weight: 800; color: #1a3560; margin: 0; letter-spacing: -0.5px; }
+  .hero p  { color: #3a5a9a; margin: 0.4rem 0 0; font-size: 0.95rem; }
 
   /* ── Section cards ── */
   .card {
-    background: #1a1f2e;
-    border: 1px solid rgba(255,255,255,0.07);
+    background: #f0f6ff;
+    border: 1px solid rgba(100,140,210,0.22);
     border-radius: 16px;
     padding: 1.6rem 1.8rem;
     margin-bottom: 1.4rem;
@@ -67,40 +67,40 @@ st.markdown("""
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: rgba(255,255,255,0.4);
+    color: #5577aa;
     margin-bottom: 1rem;
   }
 
   /* ── Sliders & number inputs ── */
-  .stSlider > div > div { background: rgba(99,102,241,0.15) !important; }
+  .stSlider > div > div { background: rgba(100,140,210,0.15) !important; }
   .stSlider [data-baseweb="slider"] [role="slider"] {
-    background: #6366f1 !important;
-    border: 2px solid #818cf8 !important;
+    background: #4a7fd4 !important;
+    border: 2px solid #7aaae8 !important;
     width: 18px !important;
     height: 18px !important;
   }
-  .stSlider [data-baseweb="slider-track-highlight"] { background: #6366f1 !important; }
+  .stSlider [data-baseweb="slider-track-highlight"] { background: #4a7fd4 !important; }
 
   /* ── Select boxes ── */
   .stSelectbox [data-baseweb="select"] > div {
-    background: #252b3b !important;
-    border-color: rgba(255,255,255,0.1) !important;
-    color: #fff !important;
+    background: #dceaf9 !important;
+    border-color: rgba(100,140,210,0.3) !important;
+    color: #1a3560 !important;
     border-radius: 10px !important;
   }
 
   /* ── Number input ── */
   .stNumberInput input {
-    background: #252b3b !important;
-    border-color: rgba(255,255,255,0.1) !important;
-    color: #fff !important;
+    background: #dceaf9 !important;
+    border-color: rgba(100,140,210,0.3) !important;
+    color: #1a3560 !important;
     border-radius: 10px !important;
   }
 
   /* ── Predict button ── */
   div[data-testid="stButton"] > button {
     width: 100%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #4a7fd4, #6a9fe8);
     color: white;
     font-weight: 700;
     font-size: 1rem;
@@ -109,12 +109,12 @@ st.markdown("""
     padding: 0.85rem 1rem;
     letter-spacing: 0.3px;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+    box-shadow: 0 4px 16px rgba(74,127,212,0.3);
   }
   div[data-testid="stButton"] > button:hover {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #3a6bbf, #5a8fd8);
     transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(99,102,241,0.45);
+    box-shadow: 0 6px 22px rgba(74,127,212,0.4);
   }
   div[data-testid="stButton"] > button:active { transform: translateY(0px); }
 
@@ -129,28 +129,28 @@ st.markdown("""
     border-radius: 14px;
     padding: 1.4rem 1.2rem;
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(100,140,210,0.2);
   }
-  .result-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.55; margin-bottom: 0.35rem; }
+  .result-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.65; margin-bottom: 0.35rem; }
   .result-value { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
-  .result-sub   { font-size: 0.75rem; margin-top: 0.3rem; opacity: 0.6; }
+  .result-sub   { font-size: 0.75rem; margin-top: 0.3rem; opacity: 0.65; }
 
   /* Colour themes per result */
-  .box-sehat      { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #10b981; }
-  .box-berisiko   { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #f59e0b; }
-  .box-kurangtidur{ background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.3);  color: #ef4444; }
-  .box-high       { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #10b981; }
-  .box-medium     { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #f59e0b; }
-  .box-low        { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.3);  color: #ef4444; }
+  .box-sehat      { background: rgba(30,160,120,0.12); border-color: rgba(30,160,120,0.35); color: #0e6b50; }
+  .box-berisiko   { background: rgba(210,140,30,0.12); border-color: rgba(210,140,30,0.35); color: #8a5a0a; }
+  .box-kurangtidur{ background: rgba(210,60,60,0.10);  border-color: rgba(210,60,60,0.3);   color: #8a2020; }
+  .box-high       { background: rgba(30,160,120,0.12); border-color: rgba(30,160,120,0.35); color: #0e6b50; }
+  .box-medium     { background: rgba(210,140,30,0.12); border-color: rgba(210,140,30,0.35); color: #8a5a0a; }
+  .box-low        { background: rgba(210,60,60,0.10);  border-color: rgba(210,60,60,0.3);   color: #8a2020; }
 
   /* ── Probability bar ── */
   .prob-row { margin-bottom: 0.55rem; }
   .prob-label-row {
     display: flex; justify-content: space-between;
-    font-size: 0.78rem; margin-bottom: 0.22rem; color: rgba(255,255,255,0.7);
+    font-size: 0.78rem; margin-bottom: 0.22rem; color: #2a4575;
   }
   .prob-bar-bg {
-    background: rgba(255,255,255,0.07);
+    background: rgba(100,140,210,0.15);
     border-radius: 100px;
     height: 7px;
     overflow: hidden;
@@ -166,11 +166,11 @@ st.markdown("""
     display: flex; align-items: flex-start; gap: 0.7rem;
     padding: 0.65rem 0.8rem;
     border-radius: 10px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(100,140,210,0.07);
+    border: 1px solid rgba(100,140,210,0.18);
     margin-bottom: 0.55rem;
     font-size: 0.85rem;
-    color: rgba(255,255,255,0.78);
+    color: #1e3a6a;
     line-height: 1.45;
   }
   .tip-icon { font-size: 1rem; flex-shrink: 0; }
@@ -182,21 +182,21 @@ st.markdown("""
     margin-bottom: 1.6rem;
   }
   .pill {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(100,140,210,0.12);
+    border: 1px solid rgba(100,140,210,0.25);
     border-radius: 100px;
     padding: 0.35rem 0.9rem;
     font-size: 0.78rem;
-    color: rgba(255,255,255,0.55);
+    color: #3a5a9a;
     white-space: nowrap;
   }
-  .pill b { color: rgba(255,255,255,0.85); }
+  .pill b { color: #1a3560; }
 
   /* ── Section header ── */
   .sec-header {
     font-size: 0.85rem;
     font-weight: 600;
-    color: rgba(255,255,255,0.85);
+    color: #1a3560;
     margin-bottom: 0.9rem;
     display: flex;
     align-items: center;
@@ -209,13 +209,13 @@ st.markdown("""
 
   /* Label text */
   .stSlider label, .stSelectbox label, .stNumberInput label {
-    color: rgba(255,255,255,0.75) !important;
+    color: #2a4070 !important;
     font-size: 0.85rem !important;
     font-weight: 500 !important;
   }
   /* Value badge on slider */
   .stSlider [data-testid="stThumbValue"] {
-    background: #6366f1 !important;
+    background: #4a7fd4 !important;
     color: white !important;
     border-radius: 6px !important;
     font-size: 0.72rem !important;
@@ -223,7 +223,7 @@ st.markdown("""
   }
 
   /* Divider */
-  hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 1.2rem 0; }
+  hr { border: none; border-top: 1px solid rgba(100,140,210,0.2); margin: 1.2rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -254,9 +254,9 @@ PERF_ID     = {"High": "🟢 Tinggi", "Medium": "🟡 Sedang", "Low": "🔴 Rend
 CLUSTER_ID  = {"Sehat": "🌿 Sehat", "Berisiko": "⚠️ Berisiko", "Kurang Tidur": "😴 Kurang Tidur"}
 
 BAR_COLORS = {
-    "High":   "linear-gradient(90deg,#10b981,#34d399)",
-    "Medium": "linear-gradient(90deg,#f59e0b,#fbbf24)",
-    "Low":    "linear-gradient(90deg,#ef4444,#f87171)",
+    "High":   "linear-gradient(90deg,#1aaa80,#2ec99a)",
+    "Medium": "linear-gradient(90deg,#d4900a,#f0b030)",
+    "Low":    "linear-gradient(90deg,#d44040,#e87070)",
 }
 
 def predict(inputs: dict):
@@ -471,10 +471,10 @@ if predict_btn:
     for i, (label, val) in enumerate(summary_data):
         with summary_cols[i % 4]:
             st.markdown(f"""
-            <div style="text-align:center;padding:0.6rem 0.3rem;background:rgba(255,255,255,0.03);
-                 border-radius:10px;margin-bottom:0.5rem;border:1px solid rgba(255,255,255,0.06)">
-              <div style="font-size:0.7rem;opacity:0.5;margin-bottom:0.15rem">{label}</div>
-              <div style="font-size:0.95rem;font-weight:700;color:#e2e8f0">{val}</div>
+            <div style="text-align:center;padding:0.6rem 0.3rem;background:rgba(100,140,210,0.1);
+                 border-radius:10px;margin-bottom:0.5rem;border:1px solid rgba(100,140,210,0.2)">
+              <div style="font-size:0.7rem;color:#5577aa;margin-bottom:0.15rem">{label}</div>
+              <div style="font-size:0.95rem;font-weight:700;color:#1a3560">{val}</div>
             </div>
             """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -503,9 +503,9 @@ if predict_btn:
                          "berdampak besar pada konsentrasi, memori, dan performa akademik."),
     }
     st.markdown(f"""
-    <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);
-         border-radius:12px;padding:1rem 1.2rem;font-size:0.87rem;color:rgba(255,255,255,0.75);line-height:1.6">
-      <b style="color:#818cf8">Tentang kelompok "{cluster_name}"</b><br>
+    <div style="background:rgba(74,127,212,0.08);border:1px solid rgba(74,127,212,0.25);
+         border-radius:12px;padding:1rem 1.2rem;font-size:0.87rem;color:#1e3a6a;line-height:1.6">
+      <b style="color:#2a5fa8">Tentang kelompok "{cluster_name}"</b><br>
       {cluster_desc.get(cluster_name, "")}
     </div>
     """, unsafe_allow_html=True)
@@ -513,15 +513,15 @@ if predict_btn:
 else:
     # Placeholder before prediction
     st.markdown("""
-    <div style="text-align:center;padding:2.5rem 1rem;color:rgba(255,255,255,0.25)">
+    <div style="text-align:center;padding:2.5rem 1rem;color:#8aaad8">
       <div style="font-size:3rem;margin-bottom:0.6rem">🔮</div>
-      <div style="font-size:0.9rem">Isi form di atas lalu klik <b style="color:rgba(255,255,255,0.45)">Analisis Sekarang</b></div>
+      <div style="font-size:0.9rem">Isi form di atas lalu klik <b style="color:#4a7fd4">Analisis Sekarang</b></div>
     </div>
     """, unsafe_allow_html=True)
 
 # Footer
 st.markdown("""
-<div style="text-align:center;padding:2rem 0 0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.18)">
+<div style="text-align:center;padding:2rem 0 0.5rem;font-size:0.75rem;color:#8aaad8">
   Student Lifestyle Analyzer · Random Forest + K-Means · Dataset: Kaggle Student Habits
 </div>
 """, unsafe_allow_html=True)
