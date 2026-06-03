@@ -354,9 +354,9 @@ st.markdown("""
 
 st.markdown("""
 <div class="pill-row">
-  <span class="pill">🤖 <b>Random Forest</b> Classifier</span>
-  <span class="pill">📊 <b>K-Means</b> Pengelompokan (k=3)</span>
-  <span class="pill">📦 Kerangka <b>CRISP-DM</b></span>
+  <span class="pill"> <b>Random Forest</b> Classifier</span>
+  <span class="pill"><b>K-Means</b> Clustering (k=3)</span>
+  <span class="pill"> <b>framework</b> <b>CRISP-DM</b></span>
 </div>
 """, unsafe_allow_html=True)
 
