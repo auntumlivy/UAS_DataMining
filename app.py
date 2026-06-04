@@ -229,7 +229,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── Load Models ───────────────────────────────────────────────────────────────
+#Load models & resources
 
 @st.cache_resource(show_spinner=False)
 def load_models():
@@ -248,8 +248,6 @@ def load_models():
 model_clf, model_cluster, scaler_clf, scaler_cluster, \
 le_performa, le_dict, cluster_names, streamlit_features, all_features = load_models()
 
-
-# ── Constants ─────────────────────────────────────────────────────────────────
 
 CLUSTER_CSS = {"Sehat": "sehat", "Berisiko": "berisiko", "Kurang Tidur": "kurangtidur"}
 PERF_CSS    = {"High": "high", "Medium": "medium", "Low": "low"}
@@ -273,7 +271,7 @@ ENERGI_DESC = {
     10:"⚡ Selalu segar, fokus maksimal & produktif",
 }
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+#Helpers
 
 def safe_encode(le, val):
     classes = list(le.classes_)
@@ -345,7 +343,7 @@ def tips_for(cluster: str, perf: str):
     }
     return tips.get(cluster, {}).get(perf, ["Terus semangat dan jaga kesehatanmu! 💪"])
 
-# ── Grafik hasil individu ─────────────────────────────────────────────────────
+#Grafik hasil individu 
 
 def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     """Radar chart gaya hidup + bar probabilitas."""
@@ -406,7 +404,7 @@ def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     plt.tight_layout(pad=2)
     return fig
 
-# ── Grafik hasil CSV ──────────────────────────────────────────────────────────
+#Grafik hasil CSV
 
 def render_chart_csv(df_result):
     """Distribusi cluster + distribusi performa + scatter tidur vs belajar."""
@@ -417,7 +415,7 @@ def render_chart_csv(df_result):
     cluster_colors = {"Sehat":"#1aaa80", "Berisiko":"#d4900a", "Kurang Tidur":"#d44040"}
     perf_colors    = {"High":"#1aaa80",  "Medium":"#d4900a",   "Low":"#d44040"}
 
-    # ─ Pie distribusi cluster ─
+    #Pie distribusi cluster
     ax0 = axes[0]; ax0.set_facecolor("#f0f6ff")
     cluster_counts = df_result["Kelompok"].value_counts()
     pie_labels = [l for l in cluster_order if l in cluster_counts.index]
@@ -432,7 +430,7 @@ def render_chart_csv(df_result):
     for at in autotexts: at.set_fontsize(8); at.set_color("white"); at.set_fontweight("bold")
     ax0.set_title("Distribusi Kelompok\nGaya Hidup", size=9, color="#1a3560", fontweight="700")
 
-    # ─ Bar distribusi performa ─
+    #Bar distribusi performa
     ax1 = axes[1]; ax1.set_facecolor("#f0f6ff")
     perf_counts = df_result["Performa"].value_counts()
     bar_labels  = [l for l in perf_order if l in perf_counts.index]
@@ -453,7 +451,7 @@ def render_chart_csv(df_result):
     ax1.spines["left"].set_color("#c5d8f5"); ax1.spines["bottom"].set_color("#c5d8f5")
     ax1.tick_params(colors="#2a4070")
 
-    # ─ Scatter tidur vs belajar ─
+    #Scatter tidur vs belajar
     ax2 = axes[2]; ax2.set_facecolor("#f0f6ff")
     if "sleep_hours" in df_result.columns and "study_hours_per_day" in df_result.columns:
         for cluster in cluster_order:
@@ -478,7 +476,7 @@ def render_chart_csv(df_result):
     plt.tight_layout(pad=2)
     return fig
 
-# ── Template CSV ──────────────────────────────────────────────────────────────
+#Template CSV
 
 def make_template_csv():
     df = pd.DataFrame([{
@@ -517,7 +515,7 @@ def process_csv_row(row):
         extracurricular  = str(row.get("extracurricular_participation", "Tidak")),
     )
 
-# ── Render hasil individu ─────────────────────────────────────────────────────
+#Render hasil individu 
 
 def render_single_result(inputs, age, sleep_hours, study_hours,
                           social_media_hours, attendance_pct,
@@ -565,7 +563,7 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # ── Ringkasan Input ──
+    # Ringkasan Input
     st.markdown('<div class="card-title">📌 Ringkasan Input</div>', unsafe_allow_html=True)
     summary_cols = st.columns(4)
     summary_data = [
@@ -590,7 +588,7 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # ── Rekomendasi ──
+    # Rekomendasi
     tips = tips_for(cluster_name, perf_name)
     st.markdown('<div class="card-title">💡 Rekomendasi Personal</div>', unsafe_allow_html=True)
     icons = ["✅","💡","🎯","⚡","🌟"]
@@ -626,11 +624,7 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 # HERO
-# ══════════════════════════════════════════════════════════════════════════════
-
 st.markdown("""
 <div class="hero">
   <h1>🎓 Analisis Gaya Hidup Mahasiswa</h1>
@@ -646,15 +640,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════════════════════
 # TABS
-# ══════════════════════════════════════════════════════════════════════════════
 
 tab1, tab2 = st.tabs(["✏️  Input Manual", "📂  Unggah CSV"])
 
-# ─────────────────────────────────────────────────────────────────────────────
 # TAB 1 — Input Manual
-# ─────────────────────────────────────────────────────────────────────────────
+
 with tab1:
     st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
 
@@ -684,11 +675,6 @@ with tab1:
         diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik","Cukup","Kurang"])
     with col5:
         mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
-        st.markdown(
-            f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
-            f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
-            unsafe_allow_html=True
-        )
         internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik","Sedang","Buruk"])
 
     col6, col7 = st.columns(2)
@@ -718,9 +704,8 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────────────────────────────────────
 # TAB 2 — Unggah CSV
-# ─────────────────────────────────────────────────────────────────────────────
+
 with tab2:
     st.markdown('<div class="card-title">📂 Analisis Batch via CSV</div>', unsafe_allow_html=True)
 
