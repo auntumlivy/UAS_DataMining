@@ -527,7 +527,8 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
     perf_css    = PERF_CSS.get(perf_name, "medium")
 
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+
+    # ── Hasil Analisis ──
     st.markdown('<div class="card-title">🎯 Hasil Analisis</div>', unsafe_allow_html=True)
 
     st.markdown(f"""
@@ -561,10 +562,10 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
           </div>
         </div>
         """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Ringkasan
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    # ── Ringkasan Input ──
     st.markdown('<div class="card-title">📌 Ringkasan Input</div>', unsafe_allow_html=True)
     summary_cols = st.columns(4)
     summary_data = [
@@ -586,11 +587,11 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
               <div style="font-size:0.95rem;font-weight:700;color:#1a3560">{val}</div>
             </div>
             """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Rekomendasi
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    # ── Rekomendasi ──
     tips = tips_for(cluster_name, perf_name)
-    st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">💡 Rekomendasi Personal</div>', unsafe_allow_html=True)
     icons = ["✅","💡","🎯","⚡","🌟"]
     for i, tip in enumerate(tips):
@@ -600,9 +601,10 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
           <span>{tip}</span>
         </div>
         """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Deskripsi cluster
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    # ── Deskripsi cluster ──
     cluster_desc = {
         "Sehat":       "Kamu memiliki pola hidup yang <b>seimbang</b> — tidur cukup, aktif belajar, dan tidak terlalu banyak menghabiskan waktu di layar. Pertahankan!",
         "Berisiko":    "Pola hidupmu menunjukkan beberapa <b>faktor risiko</b> — mungkin jam tidur kurang, terlalu banyak screen time, atau kehadiran yang perlu ditingkatkan. Yuk diperbaiki!",
@@ -616,13 +618,13 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown("<hr>", unsafe_allow_html=True)
+
     # ── Grafik ──
-    st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📈 Grafik Analisis</div>', unsafe_allow_html=True)
     fig = render_chart_individual(inputs, cluster_name, perf_name, proba_map)
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -654,51 +656,49 @@ tab1, tab2 = st.tabs(["✏️  Input Manual", "📂  Unggah CSV"])
 # TAB 1 — Input Manual
 # ─────────────────────────────────────────────────────────────────────────────
 with tab1:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    if True:
-        st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            age = st.number_input("Usia (tahun)", min_value=17, max_value=35, value=20, step=1)
-        with col2:
-            gender = st.selectbox("Jenis Kelamin", ["Laki-laki","Perempuan","Lainnya"])
-        with col3:
-            part_time_job = st.selectbox("Kerja Paruh Waktu", ["Tidak","Ya"])
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        age = st.number_input("Usia (tahun)", min_value=17, max_value=35, value=20, step=1)
+    with col2:
+        gender = st.selectbox("Jenis Kelamin", ["Laki-laki","Perempuan","Lainnya"])
+    with col3:
+        part_time_job = st.selectbox("Kerja Paruh Waktu", ["Tidak","Ya"])
 
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown('<div class="sec-header">⏰ Kebiasaan Harian</div>', unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown('<div class="sec-header">⏰ Kebiasaan Harian</div>', unsafe_allow_html=True)
 
-        sleep_hours        = st.slider("🛌 Jam Tidur per Hari",            min_value=3.0, max_value=12.0, value=7.0, step=0.5)
-        study_hours        = st.slider("📚 Jam Belajar per Hari",           min_value=0.0, max_value=12.0, value=4.0, step=0.5)
-        social_media_hours = st.slider("📱 Jam Media Sosial per Hari",      min_value=0.0, max_value=10.0, value=2.0, step=0.5)
-        netflix_hours      = st.slider("🎬 Jam Menonton Streaming per Hari",min_value=0.0, max_value=8.0,  value=1.5, step=0.5)
-        attendance_pct     = st.slider("📅 Persentase Kehadiran (%)",       min_value=40,  max_value=100,  value=85,  step=1)
+    sleep_hours        = st.slider("🛌 Jam Tidur per Hari",            min_value=3.0, max_value=12.0, value=7.0, step=0.5)
+    study_hours        = st.slider("📚 Jam Belajar per Hari",           min_value=0.0, max_value=12.0, value=4.0, step=0.5)
+    social_media_hours = st.slider("📱 Jam Media Sosial per Hari",      min_value=0.0, max_value=10.0, value=2.0, step=0.5)
+    netflix_hours      = st.slider("🎬 Jam Menonton Streaming per Hari",min_value=0.0, max_value=8.0,  value=1.5, step=0.5)
+    attendance_pct     = st.slider("📅 Persentase Kehadiran (%)",       min_value=40,  max_value=100,  value=85,  step=1)
 
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown('<div class="sec-header">🏃 Kesehatan & Lingkungan</div>', unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown('<div class="sec-header">🏃 Kesehatan & Lingkungan</div>', unsafe_allow_html=True)
 
-        col4, col5 = st.columns(2)
-        with col4:
-            exercise_freq = st.slider("🏋️ Frekuensi Olahraga (hari/minggu)", 0, 7, 3)
-            diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik","Cukup","Kurang"])
-        with col5:
-            mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
-            st.markdown(
-                f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
-                f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
-                unsafe_allow_html=True
-            )
-            internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik","Sedang","Buruk"])
+    col4, col5 = st.columns(2)
+    with col4:
+        exercise_freq = st.slider("🏋️ Frekuensi Olahraga (hari/minggu)", 0, 7, 3)
+        diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik","Cukup","Kurang"])
+    with col5:
+        mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
+        st.markdown(
+            f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
+            f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
+            unsafe_allow_html=True
+        )
+        internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik","Sedang","Buruk"])
 
-        col6, col7 = st.columns(2)
-        with col6:
-            parent_edu      = st.selectbox("🎓 Pendidikan Orang Tua", ["S2/S3","S1/D4","SMA/Sederajat"])
-        with col7:
-            extracurricular = st.selectbox("🎭 Ekstrakurikuler", ["Ya","Tidak"])
+    col6, col7 = st.columns(2)
+    with col6:
+        parent_edu      = st.selectbox("🎓 Pendidikan Orang Tua", ["S2/S3","S1/D4","SMA/Sederajat"])
+    with col7:
+        extracurricular = st.selectbox("🎭 Ekstrakurikuler", ["Ya","Tidak"])
 
-        st.markdown("</div>", unsafe_allow_html=True)
-        predict_btn = st.button("🔍 Analisis Sekarang", use_container_width=True, key="btn_manual")
+    st.markdown("<hr>", unsafe_allow_html=True)
+    predict_btn = st.button("🔍 Analisis Sekarang", use_container_width=True, key="btn_manual")
 
     if predict_btn:
         inputs = build_inputs(
@@ -722,7 +722,6 @@ with tab1:
 # TAB 2 — Unggah CSV
 # ─────────────────────────────────────────────────────────────────────────────
 with tab2:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📂 Analisis Batch via CSV</div>', unsafe_allow_html=True)
 
     st.markdown("""
@@ -758,7 +757,6 @@ with tab2:
         help="Format: lihat template di atas",
         key="csv_uploader"
     )
-    st.markdown("</div>", unsafe_allow_html=True)
 
     if uploaded is not None:
         try:
@@ -786,8 +784,9 @@ with tab2:
 
             df_result = pd.DataFrame(results)
 
+            st.markdown("<hr>", unsafe_allow_html=True)
+
             # ── Tabel hasil ──
-            st.markdown('<div class="card">', unsafe_allow_html=True)
             st.markdown('<div class="card-title">🧾 Hasil Prediksi per Mahasiswa</div>', unsafe_allow_html=True)
 
             display_cols = ["Kelompok","Performa","P_Tinggi","P_Sedang","P_Rendah"]
@@ -812,15 +811,14 @@ with tab2:
                 mime="text/csv",
                 use_container_width=False,
             )
-            st.markdown("</div>", unsafe_allow_html=True)
+
+            st.markdown("<hr>", unsafe_allow_html=True)
 
             # ── Grafik batch ──
-            st.markdown('<div class="card">', unsafe_allow_html=True)
             st.markdown('<div class="card-title">📈 Grafik Ringkasan Batch</div>', unsafe_allow_html=True)
             fig_csv = render_chart_csv(df_result)
             st.pyplot(fig_csv, use_container_width=True)
             plt.close(fig_csv)
-            st.markdown("</div>", unsafe_allow_html=True)
 
         except Exception as e:
             st.markdown(f"""
