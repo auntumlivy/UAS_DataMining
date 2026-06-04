@@ -349,8 +349,7 @@ def tips_for(cluster: str, perf: str):
 
 def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     """Radar chart gaya hidup + bar probabilitas."""
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4),
-                                    facecolor="#f0f6ff")
+    fig = plt.figure(figsize=(9, 4), facecolor="#f0f6ff")
 
     # ─ Radar chart ─
     categories = ["Tidur", "Belajar", "Olahraga", "Kehadiran\n(%)", "Energi"]
@@ -366,7 +365,7 @@ def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     angles += angles[:1]
     values = values_raw + values_raw[:1]
 
-    ax1 = plt.subplot(121, polar=True, facecolor="#e8f0fa")
+    ax1 = fig.add_subplot(121, polar=True)
     ax1.set_facecolor("#e8f0fa")
     ax1.plot(angles, values, "o-", linewidth=2, color="#4a7fd4")
     ax1.fill(angles, values, alpha=0.25, color="#4a7fd4")
@@ -375,13 +374,13 @@ def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     ax1.set_yticks([0.25, 0.5, 0.75, 1.0])
     ax1.set_yticklabels(["25%","50%","75%","100%"], size=6, color="#8aaad8")
     ax1.set_ylim(0, 1)
-    ax1.spines["polar"].set_color("rgba(100,140,210,0.3)")
+    ax1.spines["polar"].set_color("#a0b8d8")
     ax1.grid(color="#c5d8f5", linestyle="--", linewidth=0.8)
     ax1.set_title("Profil Gaya Hidup", size=9, color="#1a3560",
                   fontweight="700", pad=14)
 
     # ─ Bar probabilitas ─
-    ax2 = plt.subplot(122, facecolor="#f0f6ff")
+    ax2 = fig.add_subplot(122)
     ax2.set_facecolor("#f0f6ff")
     labels   = ["Tinggi", "Sedang", "Rendah"]
     keys     = ["High", "Medium", "Low"]
@@ -402,7 +401,6 @@ def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     ax2.spines["right"].set_visible(False)
     ax2.spines["left"].set_color("#c5d8f5")
     ax2.spines["bottom"].set_color("#c5d8f5")
-    ax2.set_facecolor("#f0f6ff")
 
     fig.patch.set_facecolor("#f0f6ff")
     plt.tight_layout(pad=2)
