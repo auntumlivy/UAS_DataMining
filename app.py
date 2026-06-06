@@ -496,8 +496,6 @@ def make_template_csv():
     return df.to_csv(index=False).encode("utf-8")
 
 def process_csv_row(row):
-    # Support nama kolom baru (fokus_harian, mengikuti_organisasi)
-    # maupun nama kolom lama (mental_health_rating, extracurricular_participation)
     mental_health_val = row.get("fokus_harian", row.get("mental_health_rating", 7))
     extracurricular_val = row.get("mengikuti_organisasi", row.get("extracurricular_participation", "Tidak"))
     return build_inputs(
@@ -635,9 +633,9 @@ st.markdown("""
 
 st.markdown("""
 <div class="pill-row">
-  <span class="pill">🤖 <b>Random Forest</b> Classifier</span>
-  <span class="pill">📊 <b>K-Means</b> Pengelompokan (k=3)</span>
-  <span class="pill">📦 Kerangka <b>CRISP-DM</b></span>
+  <span class="pill"><b>Random Forest</b> Classifier</span>
+  <span class="pill"><b>K-Means</b> Pengelompokan</span>
+  <span class="pill">Kerangka <b>CRISP-DM</b></span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -674,11 +672,6 @@ with tab1:
         diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik","Cukup","Kurang"])
     with col5:
         mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
-        st.markdown(
-            f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
-            f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
-            unsafe_allow_html=True
-        )
         internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik","Sedang","Buruk"])
 
     col6, col7 = st.columns(2)
