@@ -12,7 +12,6 @@ warnings.filterwarnings("ignore")
 
 st.set_page_config(
     page_title="Analisis Gaya Hidup Mahasiswa",
-    page_icon="🎓",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -229,7 +228,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-#Load models & resources
+
 
 @st.cache_resource(show_spinner=False)
 def load_models():
@@ -247,6 +246,7 @@ def load_models():
 
 model_clf, model_cluster, scaler_clf, scaler_cluster, \
 le_performa, le_dict, cluster_names, streamlit_features, all_features = load_models()
+
 
 
 CLUSTER_CSS = {"Sehat": "sehat", "Berisiko": "berisiko", "Kurang Tidur": "kurangtidur"}
@@ -271,7 +271,6 @@ ENERGI_DESC = {
     10:"⚡ Selalu segar, fokus maksimal & produktif",
 }
 
-#Helpers
 
 def safe_encode(le, val):
     classes = list(le.classes_)
@@ -343,7 +342,7 @@ def tips_for(cluster: str, perf: str):
     }
     return tips.get(cluster, {}).get(perf, ["Terus semangat dan jaga kesehatanmu! 💪"])
 
-#Grafik hasil individu 
+
 
 def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     """Radar chart gaya hidup + bar probabilitas."""
@@ -404,7 +403,7 @@ def render_chart_individual(inputs, cluster_name, perf_name, proba_map):
     plt.tight_layout(pad=2)
     return fig
 
-#Grafik hasil CSV
+
 
 def render_chart_csv(df_result):
     """Distribusi cluster + distribusi performa + scatter tidur vs belajar."""
@@ -415,7 +414,7 @@ def render_chart_csv(df_result):
     cluster_colors = {"Sehat":"#1aaa80", "Berisiko":"#d4900a", "Kurang Tidur":"#d44040"}
     perf_colors    = {"High":"#1aaa80",  "Medium":"#d4900a",   "Low":"#d44040"}
 
-    #Pie distribusi cluster
+    # ─ Pie distribusi cluster ─
     ax0 = axes[0]; ax0.set_facecolor("#f0f6ff")
     cluster_counts = df_result["Kelompok"].value_counts()
     pie_labels = [l for l in cluster_order if l in cluster_counts.index]
@@ -430,7 +429,7 @@ def render_chart_csv(df_result):
     for at in autotexts: at.set_fontsize(8); at.set_color("white"); at.set_fontweight("bold")
     ax0.set_title("Distribusi Kelompok\nGaya Hidup", size=9, color="#1a3560", fontweight="700")
 
-    #Bar distribusi performa
+    # ─ Bar distribusi performa ─
     ax1 = axes[1]; ax1.set_facecolor("#f0f6ff")
     perf_counts = df_result["Performa"].value_counts()
     bar_labels  = [l for l in perf_order if l in perf_counts.index]
@@ -451,7 +450,7 @@ def render_chart_csv(df_result):
     ax1.spines["left"].set_color("#c5d8f5"); ax1.spines["bottom"].set_color("#c5d8f5")
     ax1.tick_params(colors="#2a4070")
 
-    #Scatter tidur vs belajar
+    # ─ Scatter tidur vs belajar ─
     ax2 = axes[2]; ax2.set_facecolor("#f0f6ff")
     if "sleep_hours" in df_result.columns and "study_hours_per_day" in df_result.columns:
         for cluster in cluster_order:
@@ -476,7 +475,6 @@ def render_chart_csv(df_result):
     plt.tight_layout(pad=2)
     return fig
 
-#Template CSV
 
 def make_template_csv():
     df = pd.DataFrame([{
@@ -489,15 +487,19 @@ def make_template_csv():
         "netflix_hours": 1.5,
         "attendance_percentage": 85,
         "exercise_frequency": 3,
-        "mental_health_rating": 7,
+        "fokus_harian": 7,
         "diet_quality": "Baik",
         "internet_quality": "Baik",
         "parental_education_level": "S1/D4",
-        "extracurricular_participation": "Ya",
+        "mengikuti_organisasi": "Ya",
     }])
     return df.to_csv(index=False).encode("utf-8")
 
 def process_csv_row(row):
+    # Support nama kolom baru (fokus_harian, mengikuti_organisasi)
+    # maupun nama kolom lama (mental_health_rating, extracurricular_participation)
+    mental_health_val = row.get("fokus_harian", row.get("mental_health_rating", 7))
+    extracurricular_val = row.get("mengikuti_organisasi", row.get("extracurricular_participation", "Tidak"))
     return build_inputs(
         age              = row.get("age", 20),
         study_hours      = row.get("study_hours_per_day", 4.0),
@@ -506,16 +508,14 @@ def process_csv_row(row):
         attendance_pct   = row.get("attendance_percentage", 85),
         sleep_hours      = row.get("sleep_hours", 7.0),
         exercise_freq    = row.get("exercise_frequency", 3),
-        mental_health    = row.get("mental_health_rating", 7),
+        mental_health    = mental_health_val,
         gender           = str(row.get("gender", "Laki-laki")),
         part_time_job    = str(row.get("part_time_job", "Tidak")),
         diet_quality     = str(row.get("diet_quality", "Baik")),
         internet_qual    = str(row.get("internet_quality", "Baik")),
         parent_edu       = str(row.get("parental_education_level", "S1/D4")),
-        extracurricular  = str(row.get("extracurricular_participation", "Tidak")),
+        extracurricular  = str(extracurricular_val),
     )
-
-#Render hasil individu 
 
 def render_single_result(inputs, age, sleep_hours, study_hours,
                           social_media_hours, attendance_pct,
@@ -563,7 +563,7 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # Ringkasan Input
+    # ── Ringkasan Input ──
     st.markdown('<div class="card-title">📌 Ringkasan Input</div>', unsafe_allow_html=True)
     summary_cols = st.columns(4)
     summary_data = [
@@ -588,7 +588,7 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # Rekomendasi
+    # ── Rekomendasi ──
     tips = tips_for(cluster_name, perf_name)
     st.markdown('<div class="card-title">💡 Rekomendasi Personal</div>', unsafe_allow_html=True)
     icons = ["✅","💡","🎯","⚡","🌟"]
@@ -624,10 +624,11 @@ def render_single_result(inputs, age, sleep_hours, study_hours,
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
 
-# HERO
+
+
 st.markdown("""
 <div class="hero">
-  <h1>🎓 Analisis Gaya Hidup Mahasiswa</h1>
+  <h1>Analisis Gaya Hidup Mahasiswa</h1>
   <p>Analisis pola hidup & prediksi performa akademikmu dengan Machine Learning</p>
 </div>
 """, unsafe_allow_html=True)
@@ -640,11 +641,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# TABS
+
 
 tab1, tab2 = st.tabs(["✏️  Input Manual", "📂  Unggah CSV"])
-
-# TAB 1 — Input Manual
 
 with tab1:
     st.markdown('<div class="card-title">📋 Data Profil Mahasiswa</div>', unsafe_allow_html=True)
@@ -675,13 +674,18 @@ with tab1:
         diet_quality  = st.selectbox("🥗 Kualitas Pola Makan", ["Baik","Cukup","Kurang"])
     with col5:
         mental_health = st.slider("⚡ Energi & Fokus Harian (1–10)", 1, 10, 7)
+        st.markdown(
+            f'<div class="skala-hint">1 = sering lelah &amp; susah fokus &nbsp;·&nbsp; 10 = selalu segar &amp; fokus<br>'
+            f'<b>Kamu:</b> {ENERGI_DESC[mental_health]}</div>',
+            unsafe_allow_html=True
+        )
         internet_qual = st.selectbox("🌐 Kualitas Internet", ["Baik","Sedang","Buruk"])
 
     col6, col7 = st.columns(2)
     with col6:
         parent_edu      = st.selectbox("🎓 Pendidikan Orang Tua", ["S2/S3","S1/D4","SMA/Sederajat"])
     with col7:
-        extracurricular = st.selectbox("🎭 Ekstrakurikuler", ["Ya","Tidak"])
+        extracurricular = st.selectbox("🏛️ Mengikuti Organisasi", ["Ya","Tidak"])
 
     st.markdown("<hr>", unsafe_allow_html=True)
     predict_btn = st.button("🔍 Analisis Sekarang", use_container_width=True, key="btn_manual")
@@ -703,8 +707,6 @@ with tab1:
           <div style="font-size:0.9rem">Isi form di atas lalu klik <b style="color:#4a7fd4">Analisis Sekarang</b></div>
         </div>
         """, unsafe_allow_html=True)
-
-# TAB 2 — Unggah CSV
 
 with tab2:
     st.markdown('<div class="card-title">📂 Analisis Batch via CSV</div>', unsafe_allow_html=True)
@@ -822,7 +824,6 @@ with tab2:
         """, unsafe_allow_html=True)
 
 
-# ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div style="text-align:center;padding:2rem 0 0.5rem;font-size:0.75rem;color:#8aaad8">
   Analisis Gaya Hidup Mahasiswa · Random Forest + K-Means · Dataset: Kaggle Student Habits
