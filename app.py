@@ -219,11 +219,6 @@ hr { border: none; border-top: 1px solid #bae6fd; margin: 1.5rem 0; }
     color: #065f46; font-weight: 600; font-size: 0.88rem;
 }
 
-#MainMenu, footer { visibility: hidden; }
-.block-container { padding-top: 1.5rem !important; padding-bottom: 3rem; }
-.stSlider label, .stSelectbox label, .stNumberInput label {
-    color: #374f6b !important; font-size: 0.85rem !important; font-weight: 600 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -520,7 +515,7 @@ with tab3:
 
     pred_tab1, pred_tab2 = st.tabs(["✏️  Input Manual", "📤  Upload CSV"])
 
-    # ── INPUT MANUAL ─────────────────────────────────────────
+    # ─ INPUT MANUAL
     with pred_tab1:
         form_col, result_col = st.columns([1, 1], gap="large")
 
@@ -711,7 +706,7 @@ with tab4:
     """, unsafe_allow_html=True)
 
     # ── Baris 1: Distribusi Label Target (bar + pie) ──────────
-    st.markdown("**📊 Distribusi Label Target Klasifikasi**", unsafe_allow_html=False)
+    st.markdown(" Distribusi Label Target Klasifikasi", unsafe_allow_html=False)
     c1, c2 = st.columns(2)
 
     with c1:
@@ -746,7 +741,7 @@ with tab4:
     st.markdown("<hr>", unsafe_allow_html=True)
 
 
-    st.markdown("**📐 Penentuan Jumlah Cluster Optimal (K-Means)**", unsafe_allow_html=False)
+    st.markdown(" Penentuan Jumlah Cluster Optimal (K-Means)", unsafe_allow_html=False)
     c1, c2 = st.columns(2)
 
     with c1:
@@ -778,7 +773,7 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.markdown("** Profil Cluster Mahasiswa**", unsafe_allow_html=False)
+    st.markdown(" Profil Cluster Mahasiswa", unsafe_allow_html=False)
     c1, c2 = st.columns(2)
 
     with c1:
@@ -819,7 +814,7 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.markdown("**🌲 Evaluasi Model Random Forest**", unsafe_allow_html=False)
+    st.markdown("Evaluasi Model Random Forest", unsafe_allow_html=False)
     c1, c2 = st.columns(2)
 
     with c1:
@@ -876,7 +871,7 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.markdown("**🏆 Perbandingan Performa Model Klasifikasi**", unsafe_allow_html=False)
+    st.markdown("🏆 Perbandingan Performa Model Klasifikasi", unsafe_allow_html=False)
     fig, ax = plt.subplots(figsize=(11, 4))
     fig.patch.set_facecolor('white'); set_chart_style(ax)
     # Data asli dari grafik perbandingan model
