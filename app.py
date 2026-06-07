@@ -219,7 +219,7 @@ hr { border: none; border-top: 1px solid #bae6fd; margin: 1.5rem 0; }
     color: #065f46; font-weight: 600; font-size: 0.88rem;
 }
 
-#MainMenu, footer, [data-testid="stToolbar"] { visibility: hidden; }
+#MainMenu, footer, [data-testid="stToolbar"] { display: none; }
 .block-container { padding-top: 1.5rem !important; padding-bottom: 3rem; }
 .stSlider label, .stSelectbox label, .stNumberInput label {
     color: #374f6b !important; font-size: 0.85rem !important; font-weight: 600 !important;
@@ -346,11 +346,15 @@ def process_csv_row(row):
 
 # APP TITLE BAR
 st.markdown("""
-<div style='text-align:center; padding: 0.75rem 0 0.25rem'>
-  <span style='font-size:1.4rem; font-weight:800; color:#0284c7'>Student</span>
-  <span style='font-size:1.4rem; font-weight:800; color:#0c2340'> Lifestyle</span>
-  <span style='font-size:1.4rem; font-weight:800; color:#0284c7'> Analyzer</span>
-  <span style='font-size:0.78rem; font-weight:600; color:#64748b; margin-left:8px'>— Analisis Gaya Hidup & Performa Akademik</span>
+<div style='text-align:center; padding: 2rem 0 1rem'>
+  <div style='font-size:1.8rem; font-weight:800; letter-spacing:-0.5px; margin-bottom:0.3rem'>
+    <span style='color:#0284c7'>Student</span>
+    <span style='color:#0c2340'> Lifestyle</span>
+    <span style='color:#0284c7'> Analyzer</span>
+  </div>
+  <div style='font-size:0.88rem; font-weight:600; color:#64748b; letter-spacing:0.3px'>
+    — Analisis Gaya Hidup & Performa Akademik —
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
