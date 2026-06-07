@@ -24,7 +24,6 @@ html, body, [class*="css"] {
 }
 
 .stApp { background: #f0f9ff; }
-
 /* ── Tabs ── */
 .stTabs [data-baseweb="tab-list"] {
     gap: 4px;
@@ -213,11 +212,6 @@ hr { border: none; border-top: 1px solid #bae6fd; margin: 1.5rem 0; }
     color: #065f46; font-weight: 600; font-size: 0.88rem;
 }
 
-#MainMenu, footer, [data-testid="stToolbar"] { display: none; }
-.block-container { padding-top: 1.5rem !important; padding-bottom: 3rem; }
-.stSlider label, .stSelectbox label, .stNumberInput label {
-    color: #374f6b !important; font-size: 0.85rem !important; font-weight: 600 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
