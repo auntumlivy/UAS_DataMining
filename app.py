@@ -24,6 +24,8 @@ html, body, [class*="css"] {
 }
 
 .stApp { background: #f0f9ff; }
+#MainMenu, footer, header, [data-testid="stToolbar"], [data-testid="stHeader"], [data-testid="stDecoration"], .stAppHeader { display: none; }
+
 /* ── Tabs ── */
 .stTabs [data-baseweb="tab-list"] {
     gap: 4px;
@@ -212,6 +214,10 @@ hr { border: none; border-top: 1px solid #bae6fd; margin: 1.5rem 0; }
     color: #065f46; font-weight: 600; font-size: 0.88rem;
 }
 
+.block-container { padding-top: 0rem !important; padding-bottom: 3rem; }
+.stSlider label, .stSelectbox label, .stNumberInput label {
+    color: #374f6b !important; font-size: 0.85rem !important; font-weight: 600 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -334,7 +340,7 @@ def process_csv_row(row):
 
 # APP TITLE BAR
 st.markdown("""
-<div style='text-align:center; padding: 2rem 0 1rem'>
+<div style='text-align:center; padding: 1rem 0 1rem'>
   <div style='font-size:1.8rem; font-weight:800; letter-spacing:-0.5px; margin-bottom:0.3rem'>
     <span style='color:#0284c7'>Student</span>
     <span style='color:#0c2340'> Lifestyle</span>
@@ -512,7 +518,7 @@ with tab3:
 
     pred_tab1, pred_tab2 = st.tabs(["✏️  Input Manual", "📤  Upload CSV"])
 
-    # ── INPUT MANUAL ─────────────────────────────────────────
+    # ─ INPUT MANUAL
     with pred_tab1:
         form_col, result_col = st.columns([1, 1], gap="large")
 
@@ -702,12 +708,10 @@ with tab4:
     <div class='section-desc'>Grafik hasil analisis nyata dari proyek — distribusi label, profil cluster, evaluasi model, dan feature importance.</div>
     """, unsafe_allow_html=True)
 
-    # ── Baris 1: Distribusi Label Target (bar + pie) ──────────
-    st.markdown("**📊 Distribusi Label Target Klasifikasi**", unsafe_allow_html=False)
+    st.markdown("**📊 Distribusi Label Target Klasifikasi**")
     c1, c2 = st.columns(2)
 
     with c1:
-        # Bar chart — data asli dari grafik: Medium=491, High=378, Low=131
         fig, ax = plt.subplots(figsize=(6, 4))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
         klasses = ['Medium', 'High', 'Low']
@@ -723,7 +727,6 @@ with tab4:
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     with c2:
-        # Pie chart — Medium 49.1%, High 37.8%, Low 13.1%
         fig, ax = plt.subplots(figsize=(6, 4))
         fig.patch.set_facecolor('white')
         sizes  = [49.1, 37.8, 13.1]
@@ -737,12 +740,10 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-
-    st.markdown("**📐 Penentuan Jumlah Cluster Optimal (K-Means)**", unsafe_allow_html=False)
+    st.markdown("**📐 Penentuan Jumlah Cluster Optimal (K-Means)**")
     c1, c2 = st.columns(2)
 
     with c1:
-        # Elbow Method — nilai WCSS dari grafik asli
         fig, ax = plt.subplots(figsize=(6, 3.8))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
         k_vals   = [2, 3, 4, 5, 6, 7, 8]
@@ -756,7 +757,6 @@ with tab4:
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     with c2:
-        # Silhouette Score — data asli: k=2:0.2017, k=3:0.1826, dst.
         fig, ax = plt.subplots(figsize=(6, 3.8))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
         sil_vals = [0.2017, 0.1826, 0.1786, 0.1781, 0.1857, 0.1815, 0.1868]
@@ -770,18 +770,16 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.markdown("** Profil Cluster Mahasiswa**", unsafe_allow_html=False)
+    st.markdown("**👥 Profil Cluster Mahasiswa**")
     c1, c2 = st.columns(2)
 
     with c1:
-        # Rata-rata fitur per cluster — dibaca dari boxplot asli
         fig, ax = plt.subplots(figsize=(6.5, 4))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
         feat_names = ['sleep_hours', 'study_hours\n_per_day', 'social_media\n_hours', 'attendance\n_percentage']
         x = np.arange(len(feat_names)); w = 0.25
-        # Nilai rata-rata dibaca dari boxplot median tiap cluster
-        ax.bar(x-w,  [6.2, 4.4, 2.7, 90.0], width=w, label='Sehat',       color='#10b981', edgecolor='white')
-        ax.bar(x,    [6.5, 3.7, 2.5, 74.5], width=w, label='Berisiko',    color='#f59e0b', edgecolor='white')
+        ax.bar(x-w,  [6.2, 4.4, 2.7, 90.0], width=w, label='Sehat',        color='#10b981', edgecolor='white')
+        ax.bar(x,    [6.5, 3.7, 2.5, 74.5], width=w, label='Berisiko',     color='#f59e0b', edgecolor='white')
         ax.bar(x+w,  [7.2, 2.2, 2.5, 87.0], width=w, label='Kurang Tidur', color='#ef4444', edgecolor='white')
         ax.set_xticks(x); ax.set_xticklabels(feat_names, fontsize=8.5, color='#374f6b')
         ax.set_ylabel('Nilai Rata-rata', color='#64748b')
@@ -790,14 +788,12 @@ with tab4:
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     with c2:
-        # Boxplot distribusi exam score per cluster
         fig, ax = plt.subplots(figsize=(6.5, 4))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
         np.random.seed(42)
-        # Distribusi exam score per cluster — dibaca dari histogram asli
-        sehat_scores     = np.concatenate([np.random.normal(80, 12, 350)])
-        berisiko_scores  = np.concatenate([np.random.normal(62, 15, 320)])
-        kurangtidur_scores = np.concatenate([np.random.normal(52, 13, 330)])
+        sehat_scores       = np.random.normal(80, 12, 350)
+        berisiko_scores    = np.random.normal(62, 15, 320)
+        kurangtidur_scores = np.random.normal(52, 13, 330)
         bp = ax.boxplot([sehat_scores.clip(20,100), berisiko_scores.clip(20,100), kurangtidur_scores.clip(20,100)],
                         labels=['Sehat', 'Berisiko', 'Kurang\nTidur'],
                         patch_artist=True, widths=0.5,
@@ -811,18 +807,16 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.markdown("**🌲 Evaluasi Model Random Forest**", unsafe_allow_html=False)
+    st.markdown("**🌲 Evaluasi Model Random Forest**")
     c1, c2 = st.columns(2)
 
     with c1:
-        # Confusion Matrix — data asli dari grafik
         fig, ax = plt.subplots(figsize=(5.5, 4.2))
         fig.patch.set_facecolor('white')
-        # True label: High, Low, Medium | Predicted: High, Low, Medium
         cm = np.array([
-            [57,  0, 19],   # High actual
-            [ 0,  8, 18],   # Low actual
-            [20,  1, 77],   # Medium actual
+            [57,  0, 19],
+            [ 0,  8, 18],
+            [20,  1, 77],
         ])
         im = ax.imshow(cm, cmap='Blues')
         labels_cm = ['High', 'Low', 'Medium']
@@ -839,7 +833,6 @@ with tab4:
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     with c2:
-        # Feature Importance — data asli (Top 15 dari grafik)
         fig, ax = plt.subplots(figsize=(5.5, 4.2))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
         feat_imp = [
@@ -868,10 +861,9 @@ with tab4:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.markdown("**🏆 Perbandingan Performa Model Klasifikasi**", unsafe_allow_html=False)
+    st.markdown("**🏆 Perbandingan Performa Model Klasifikasi**")
     fig, ax = plt.subplots(figsize=(11, 4))
     fig.patch.set_facecolor('white'); set_chart_style(ax)
-    # Data asli dari grafik perbandingan model
     models     = ['Gradient Boosting', 'Random Forest', 'Decision Tree', 'K-Nearest Neighbors']
     accuracy   = [0.745, 0.730, 0.700, 0.630]
     f1_score   = [0.742, 0.718, 0.699, 0.623]
@@ -892,7 +884,6 @@ with tab4:
     ax.legend(fontsize=9, framealpha=0.85)
     plt.tight_layout(); st.pyplot(fig); plt.close()
 
-    # Metrik summary
     st.markdown("<br>", unsafe_allow_html=True)
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("🥇 Best Accuracy",  "74.5%", "Gradient Boosting")
@@ -941,8 +932,7 @@ with tab5:
         </div>
         """, unsafe_allow_html=True)
 
-        # Alur CRISP-DM
-        st.markdown("<strong style='color:#0c2340'> Alur CRISP-DM Proyek Ini</strong>", unsafe_allow_html=True)
+        st.markdown("<strong style='color:#0c2340'>📋 Alur CRISP-DM Proyek Ini</strong>", unsafe_allow_html=True)
         phases = [
             ("1","#0ea5e9","Business Understanding","Identifikasi permasalahan: hubungan gaya hidup dan performa akademik"),
             ("2","#10b981","Data Understanding","Eksplorasi 1.000 data mahasiswa Kaggle — distribusi & korelasi fitur"),
@@ -965,7 +955,7 @@ with tab5:
     with c2:
         st.markdown("""
         <div class='custom-card'>
-            <strong style='color:#0c2340; font-size:1rem'>Tools</strong><br><br>
+            <strong style='color:#0c2340; font-size:1rem'>🛠️ Tools</strong><br><br>
             <span class='tag tag-dark'>Python 3.x</span>
             <span class='tag tag-dark'>scikit-learn</span>
             <span class='tag tag-dark'>pandas</span>
@@ -989,17 +979,16 @@ with tab5:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Anggota tim
         st.markdown("""
         <div class='custom-card'>
             <strong style='color:#0c2340; font-size:1rem'>👥 Anggota Tim</strong><br><br>
             <div style='display:flex; align-items:center; gap:0.9rem; padding:0.75rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; margin-bottom:0.6rem'>
               <div style='width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:1rem;flex-shrink:0'>A</div>
-              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Eno Tri Febriani</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214087 </div></div>
+              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Eno Tri Febriani</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214087</div></div>
             </div>
             <div style='display:flex; align-items:center; gap:0.9rem; padding:0.75rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px'>
               <div style='width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:1rem;flex-shrink:0'>B</div>
-              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Diazt Renata</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214105 </div></div>
+              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Diazt Renata</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214105</div></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
