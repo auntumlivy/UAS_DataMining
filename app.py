@@ -203,23 +203,6 @@ div[class*="TrackHighlight"] { background: #0ea5e9 !important; border-radius: 10
     border-radius: 10px; margin-bottom: 0.35rem;
 }
 
-/* ── Phase step ── */
-.phase-step {
-    display: flex; align-items: flex-start; gap: 0.9rem;
-    padding: 0.75rem 1rem;
-    background: white; border: 1px solid #bae6fd;
-    border-radius: 12px; margin-bottom: 0.45rem;
-}
-
-hr { border: none; border-top: 1px solid #bae6fd; margin: 1.5rem 0; }
-
-.success-box {
-    background: #ecfdf5; border: 1px solid #6ee7b7;
-    border-radius: 12px; padding: 1rem 1.25rem;
-    color: #065f46; font-weight: 600; font-size: 0.88rem;
-}
-
-</style>
 """, unsafe_allow_html=True)
 
 
