@@ -25,12 +25,6 @@ html, body, [class*="css"] {
 
 .stApp { background: #f0f9ff; }
 
-header[data-testid="stHeader"] {
-    background: rgba(240,249,255,0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid #bae6fd;
-}
-
 /* ── Tabs ── */
 .stTabs [data-baseweb="tab-list"] {
     gap: 4px;
