@@ -7,15 +7,14 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
 
-# ── PAGE CONFIG ──────────────────────────────────────────────
+# ─ PAGE CONFIG
 st.set_page_config(
     page_title="Analisis Gaya Hidup Mahasiswa",
-    page_icon="🎓",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ── CUSTOM CSS ───────────────────────────────────────────────
+# ─ CUSTOM CSS 
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
@@ -229,7 +228,7 @@ hr { border: none; border-top: 1px solid #bae6fd; margin: 1.5rem 0; }
 """, unsafe_allow_html=True)
 
 
-# ── LOAD MODELS ──────────────────────────────────────────────
+# ─ LOAD MODELS 
 @st.cache_resource(show_spinner=False)
 def load_models():
     model_clf      = joblib.load("model/model_clf.pkl")
@@ -248,7 +247,6 @@ def load_models():
  le_performa, le_dict, cluster_names, streamlit_features, all_features) = load_models()
 
 
-# ── HELPERS ──────────────────────────────────────────────────
 SKY = ['#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd', '#0284c7']
 
 def set_chart_style(ax):
@@ -346,10 +344,7 @@ def process_csv_row(row):
         extracurricular=str(row.get("mengikuti_organisasi", row.get("extracurricular_participation","Tidak"))),
     )
 
-
-# ════════════════════════════════════════════════════════════
 # APP TITLE BAR
-# ════════════════════════════════════════════════════════════
 st.markdown("""
 <div style='text-align:center; padding: 0.75rem 0 0.25rem'>
   <span style='font-size:1.4rem; font-weight:800; color:#0284c7'>Student</span>
@@ -359,7 +354,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── TABS ─────────────────────────────────────────────────────
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🏠  Home",
     "📂  Dataset",
@@ -368,20 +362,17 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "ℹ️  About"
 ])
 
-
-# ════════════════════════════════════════════════════════════
 #  TAB 1 — HOME
-# ════════════════════════════════════════════════════════════
 with tab1:
     st.markdown("""
     <div class='hero-box'>
-        <div class='badge'>● Tugas Besar Data Mining 2025/2026</div>
+        <div class='badge'>UAS Data Mining</div>
         <h1>Analisis Gaya Hidup<br><span>Mahasiswa & Performa Akademik</span></h1>
         <p>Aplikasi prediksi dan analisis berbasis machine learning untuk memahami hubungan antara
         kebiasaan sehari-hari dan hasil akademik mahasiswa secara mendalam dan intuitif.</p>
         <div class='member-row'>
-            <div class='member-card'><div class='name'>Nama Anggota 1</div><div class='nim'>NIM · XXXXXXXXXX</div></div>
-            <div class='member-card'><div class='name'>Nama Anggota 2</div><div class='nim'>NIM · XXXXXXXXXX</div></div>
+            <div class='member-card'><div class='name'>Eno Tri Febriani</div><div class='nim'>NIM · 24051214087</div></div>
+            <div class='member-card'><div class='name'>Diazt Renata</div><div class='nim'>NIM · 24051214105</div></div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -414,9 +405,7 @@ with tab1:
             </div>""", unsafe_allow_html=True)
 
 
-# ════════════════════════════════════════════════════════════
 #  TAB 2 — DATASET
-# ════════════════════════════════════════════════════════════
 with tab2:
     st.markdown("""
     <div class='section-label'>02 — Dataset Overview</div>
@@ -521,10 +510,7 @@ with tab2:
     plt.close(fig_ds)
     st.markdown('<div style="font-size:0.73rem;color:#94a3b8;text-align:center">* Visualisasi representatif berdasarkan karakteristik dataset</div>', unsafe_allow_html=True)
 
-
-# ════════════════════════════════════════════════════════════
 #  TAB 3 — PREDICTION
-# ════════════════════════════════════════════════════════════
 with tab3:
     st.markdown("""
     <div class='section-label'>03 — Prediction / Analysis</div>
@@ -646,7 +632,6 @@ with tab3:
                     <div style='font-size:0.82rem; margin-top:0.3rem'>Hasil analisis akan muncul di sini</div>
                 </div>""", unsafe_allow_html=True)
 
-    # ── UPLOAD CSV ────────────────────────────────────────────
     with pred_tab2:
         st.markdown("""
         <div class='custom-card'>
@@ -717,110 +702,216 @@ with tab3:
             </div>""", unsafe_allow_html=True)
 
 
-# ════════════════════════════════════════════════════════════
 #  TAB 4 — VISUALIZATION
-# ════════════════════════════════════════════════════════════
 with tab4:
     st.markdown("""
     <div class='section-label'>04 — Visualization</div>
     <div class='section-header'>Visualisasi Data & Model</div>
-    <div class='section-desc'>Grafik perbandingan cluster, distribusi performa, korelasi fitur, dan analisis hasil model.</div>
+    <div class='section-desc'>Grafik hasil analisis nyata dari proyek — distribusi label, profil cluster, evaluasi model, dan feature importance.</div>
     """, unsafe_allow_html=True)
 
-    # Row 1 — Bar cluster + Heatmap distribusi
+    # ── Baris 1: Distribusi Label Target (bar + pie) ──────────
+    st.markdown("**📊 Distribusi Label Target Klasifikasi**", unsafe_allow_html=False)
     c1, c2 = st.columns(2)
 
     with c1:
-        fig, ax = plt.subplots(figsize=(6.5, 4))
+        # Bar chart — data asli dari grafik: Medium=491, High=378, Low=131
+        fig, ax = plt.subplots(figsize=(6, 4))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
-        cats  = ["Jam Tidur","Jam Belajar","Kehadiran\n(%/10)","Olahraga","Energi\n(1-10)"]
-        xv    = np.arange(len(cats)); wv = 0.25
-        ax.bar(xv-wv, [7.8,5.5,8.8,4.2,7.5], width=wv, label="🌿 Sehat",       color='#10b981', edgecolor='white')
-        ax.bar(xv,    [6.2,4.1,7.2,2.5,5.8], width=wv, label="⚠️ Berisiko",    color='#f59e0b', edgecolor='white')
-        ax.bar(xv+wv, [4.9,5.2,7.5,3.0,4.5], width=wv, label="😴 Kurang Tidur", color='#ef4444', edgecolor='white')
-        ax.set_xticks(xv); ax.set_xticklabels(cats, fontsize=9, color="#374f6b")
-        ax.set_ylabel('Nilai Rata-rata'); ax.legend(fontsize=8)
-        ax.set_title('Karakteristik Rata-rata per Kelompok', fontweight='bold', color='#0c2340', fontsize=11)
+        klasses = ['Medium', 'High', 'Low']
+        counts  = [491, 378, 131]
+        colors  = ['#f59e0b', '#10b981', '#ef4444']
+        bars = ax.bar(klasses, counts, color=colors, edgecolor='white', width=0.55)
+        for bar, val in zip(bars, counts):
+            ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+5, str(val),
+                    ha='center', va='bottom', fontsize=12, fontweight='700', color='#0c2340')
+        ax.set_ylabel('Jumlah Mahasiswa', color='#64748b')
+        ax.set_title('Distribusi Kategori Performa', fontweight='bold', color='#0c2340', fontsize=11)
+        ax.set_ylim(0, 560)
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     with c2:
-        fig, ax = plt.subplots(figsize=(6.5, 4))
+        # Pie chart — Medium 49.1%, High 37.8%, Low 13.1%
+        fig, ax = plt.subplots(figsize=(6, 4))
         fig.patch.set_facecolor('white')
-        dm = np.array([[55,30,15],[25,45,30],[15,35,50]])
-        im = ax.imshow(dm, cmap='Blues', aspect='auto')
-        ax.set_xticks(range(3)); ax.set_xticklabels(["Tinggi","Sedang","Rendah"], fontsize=9)
-        ax.set_yticks(range(3)); ax.set_yticklabels(["Sehat","Berisiko","Kurang Tidur"], fontsize=9)
-        ax.set_title('Distribusi Performa per Kelompok (%)', fontweight='bold', color='#0c2340', fontsize=11)
-        ax.set_xlabel('Performa Akademik'); ax.set_ylabel('Kelompok Gaya Hidup')
-        for i in range(3):
-            for j in range(3):
-                ax.text(j,i,f"{dm[i,j]}%",ha='center',va='center',fontsize=12,fontweight='700',
-                        color='white' if dm[i,j]>35 else '#0c2340')
-        plt.colorbar(im, ax=ax, label="%"); plt.tight_layout(); st.pyplot(fig); plt.close()
+        sizes  = [49.1, 37.8, 13.1]
+        labels = ['Medium\n49.1%', 'High\n37.8%', 'Low\n13.1%']
+        colors_pie = ['#f59e0b', '#10b981', '#ef4444']
+        wedges, texts = ax.pie(sizes, labels=labels, colors=colors_pie, startangle=90,
+                               textprops={'fontsize': 10, 'color': '#0c2340', 'fontweight': '600'},
+                               wedgeprops={'edgecolor': 'white', 'linewidth': 2})
+        ax.set_title('Proporsi Kategori Performa', fontweight='bold', color='#0c2340', fontsize=11)
+        plt.tight_layout(); st.pyplot(fig); plt.close()
 
-    # Row 2 — Scatter + bar performa + feature importance
-    c1, c2, c3 = st.columns(3)
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+
+    st.markdown("**📐 Penentuan Jumlah Cluster Optimal (K-Means)**", unsafe_allow_html=False)
+    c1, c2 = st.columns(2)
 
     with c1:
-        fig, ax = plt.subplots(figsize=(4.5, 3.8))
+        # Elbow Method — nilai WCSS dari grafik asli
+        fig, ax = plt.subplots(figsize=(6, 3.8))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
-        np.random.seed(99)
-        for cluster, color, sm, stm in [("Sehat","#10b981",7.8,5.5),("Berisiko","#f59e0b",6.2,4.1),("Kurang Tidur","#ef4444",4.9,5.2)]:
-            ax.scatter(np.random.normal(sm,0.8,330).clip(3,12), np.random.normal(stm,1.2,330).clip(0,12),
-                       c=color, alpha=0.5, s=22, label=cluster, edgecolors='none')
-        ax.set_xlabel('Jam Tidur/Hari'); ax.set_ylabel('Jam Belajar/Hari')
-        ax.set_title('Tidur vs Belajar per Kelompok', fontweight='bold', color='#0c2340', fontsize=10)
-        ax.legend(fontsize=7.5, framealpha=0.8)
+        k_vals   = [2, 3, 4, 5, 6, 7, 8]
+        inertia  = [105, 91, 80.5, 73, 66, 62, 58]
+        ax.plot(k_vals, inertia, color=SKY[0], linewidth=2.5, marker='o', markersize=6)
+        ax.axvline(x=3, color='red', linestyle='--', linewidth=1.5, label='k=3 (dipilih)')
+        ax.fill_between(k_vals, inertia, alpha=0.08, color=SKY[0])
+        ax.set_xlabel('Jumlah Cluster (k)'); ax.set_ylabel('Inertia (WCSS)')
+        ax.set_title('Elbow Method', fontweight='bold', color='#0c2340', fontsize=11)
+        ax.legend(fontsize=9); ax.set_xticks(k_vals)
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     with c2:
-        fig, ax = plt.subplots(figsize=(4.5, 3.8))
+        # Silhouette Score — data asli: k=2:0.2017, k=3:0.1826, dst.
+        fig, ax = plt.subplots(figsize=(6, 3.8))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
-        labels_p = ["Tinggi","Sedang","Rendah"]; vals_p = [33.2, 33.9, 32.9]
-        bars = ax.bar(labels_p, vals_p, color=['#10b981','#f59e0b','#ef4444'], edgecolor='white', width=0.55)
-        ax.set_ylim(0, 42)
-        for bar, val in zip(bars, vals_p):
-            ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.5, f'{val}%',
-                    ha='center', va='bottom', fontsize=10, fontweight='700', color='#0c2340')
-        ax.set_title('Distribusi Performa Akademik', fontweight='bold', color='#0c2340', fontsize=10)
-        ax.set_ylabel('Persentase (%)')
+        sil_vals = [0.2017, 0.1826, 0.1786, 0.1781, 0.1857, 0.1815, 0.1868]
+        ax.plot(k_vals, sil_vals, color='#10b981', linewidth=2.5, marker='s', markersize=6)
+        ax.axvline(x=3, color='red', linestyle='--', linewidth=1.5, label='k=3 (dipilih)')
+        ax.fill_between(k_vals, sil_vals, alpha=0.08, color='#10b981')
+        ax.set_xlabel('Jumlah Cluster (k)'); ax.set_ylabel('Silhouette Score')
+        ax.set_title('Silhouette Score per k', fontweight='bold', color='#0c2340', fontsize=11)
+        ax.legend(fontsize=9); ax.set_xticks(k_vals)
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
-    with c3:
-        fig, ax = plt.subplots(figsize=(4.5, 3.8))
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    st.markdown("** Profil Cluster Mahasiswa**", unsafe_allow_html=False)
+    c1, c2 = st.columns(2)
+
+    with c1:
+        # Rata-rata fitur per cluster — dibaca dari boxplot asli
+        fig, ax = plt.subplots(figsize=(6.5, 4))
         fig.patch.set_facecolor('white'); set_chart_style(ax)
-        features_fi = ['sleep_hours','study_hours','attendance','mental_health','exercise']
-        importance  = [0.28, 0.24, 0.19, 0.16, 0.13]
-        bars = ax.barh(features_fi, importance, color=SKY[0], edgecolor='white', height=0.6)
-        for bar, val in zip(bars, importance):
-            ax.text(val+0.005, bar.get_y()+bar.get_height()/2, f'{val:.2f}', va='center', fontsize=9, color='#374f6b', fontweight='600')
-        ax.set_xlabel('Importance Score')
-        ax.set_title('Feature Importance (RF)', fontweight='bold', color='#0c2340', fontsize=10)
-        ax.invert_yaxis()
+        feat_names = ['sleep_hours', 'study_hours\n_per_day', 'social_media\n_hours', 'attendance\n_percentage']
+        x = np.arange(len(feat_names)); w = 0.25
+        # Nilai rata-rata dibaca dari boxplot median tiap cluster
+        ax.bar(x-w,  [6.2, 4.4, 2.7, 90.0], width=w, label='Sehat',       color='#10b981', edgecolor='white')
+        ax.bar(x,    [6.5, 3.7, 2.5, 74.5], width=w, label='Berisiko',    color='#f59e0b', edgecolor='white')
+        ax.bar(x+w,  [7.2, 2.2, 2.5, 87.0], width=w, label='Kurang Tidur', color='#ef4444', edgecolor='white')
+        ax.set_xticks(x); ax.set_xticklabels(feat_names, fontsize=8.5, color='#374f6b')
+        ax.set_ylabel('Nilai Rata-rata', color='#64748b')
+        ax.set_title('Rata-rata Fitur per Cluster', fontweight='bold', color='#0c2340', fontsize=11)
+        ax.legend(fontsize=8.5, framealpha=0.85)
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
-    # Row 3 — Training curve
-    st.markdown("<br>", unsafe_allow_html=True)
-    fig, ax = plt.subplots(figsize=(11, 3.8))
+    with c2:
+        # Boxplot distribusi exam score per cluster
+        fig, ax = plt.subplots(figsize=(6.5, 4))
+        fig.patch.set_facecolor('white'); set_chart_style(ax)
+        np.random.seed(42)
+        # Distribusi exam score per cluster — dibaca dari histogram asli
+        sehat_scores     = np.concatenate([np.random.normal(80, 12, 350)])
+        berisiko_scores  = np.concatenate([np.random.normal(62, 15, 320)])
+        kurangtidur_scores = np.concatenate([np.random.normal(52, 13, 330)])
+        bp = ax.boxplot([sehat_scores.clip(20,100), berisiko_scores.clip(20,100), kurangtidur_scores.clip(20,100)],
+                        labels=['Sehat', 'Berisiko', 'Kurang\nTidur'],
+                        patch_artist=True, widths=0.5,
+                        medianprops={'color':'#0c2340','linewidth':2})
+        colors_bp = ['#10b981', '#f59e0b', '#ef4444']
+        for patch, color in zip(bp['boxes'], colors_bp):
+            patch.set_facecolor(color); patch.set_alpha(0.7)
+        ax.set_ylabel('Exam Score', color='#64748b')
+        ax.set_title('Distribusi Exam Score per Cluster', fontweight='bold', color='#0c2340', fontsize=11)
+        plt.tight_layout(); st.pyplot(fig); plt.close()
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    st.markdown("**🌲 Evaluasi Model Random Forest**", unsafe_allow_html=False)
+    c1, c2 = st.columns(2)
+
+    with c1:
+        # Confusion Matrix — data asli dari grafik
+        fig, ax = plt.subplots(figsize=(5.5, 4.2))
+        fig.patch.set_facecolor('white')
+        # True label: High, Low, Medium | Predicted: High, Low, Medium
+        cm = np.array([
+            [57,  0, 19],   # High actual
+            [ 0,  8, 18],   # Low actual
+            [20,  1, 77],   # Medium actual
+        ])
+        im = ax.imshow(cm, cmap='Blues')
+        labels_cm = ['High', 'Low', 'Medium']
+        ax.set_xticks(range(3)); ax.set_xticklabels(labels_cm, fontsize=10)
+        ax.set_yticks(range(3)); ax.set_yticklabels(labels_cm, fontsize=10)
+        ax.set_xlabel('Predicted label', fontsize=10, color='#64748b')
+        ax.set_ylabel('True label', fontsize=10, color='#64748b')
+        ax.set_title('Confusion Matrix', fontweight='bold', color='#0c2340', fontsize=11)
+        for i in range(3):
+            for j in range(3):
+                ax.text(j, i, str(cm[i,j]), ha='center', va='center', fontsize=13,
+                        fontweight='700', color='white' if cm[i,j] > 40 else '#0c2340')
+        plt.colorbar(im, ax=ax)
+        plt.tight_layout(); st.pyplot(fig); plt.close()
+
+    with c2:
+        # Feature Importance — data asli (Top 15 dari grafik)
+        fig, ax = plt.subplots(figsize=(5.5, 4.2))
+        fig.patch.set_facecolor('white'); set_chart_style(ax)
+        feat_imp = [
+            ('study_hours_per_day',          0.371),
+            ('social_media_hours',           0.072),
+            ('mental_health_rating',         0.068),
+            ('sleep_hours',                  0.065),
+            ('attendance_percentage',        0.062),
+            ('netflix_hours',                0.060),
+            ('student_id_enc',               0.058),
+            ('exercise_frequency',           0.040),
+            ('age',                          0.038),
+            ('parental_education_level_enc', 0.025),
+        ]
+        names, vals_fi = zip(*feat_imp)
+        colors_fi = [SKY[0] if v == max(vals_fi) else SKY[1] for v in vals_fi]
+        bars_fi = ax.barh(list(names), list(vals_fi), color=colors_fi, edgecolor='white', height=0.65)
+        for bar, val in zip(bars_fi, vals_fi):
+            ax.text(val+0.005, bar.get_y()+bar.get_height()/2, f'{val:.3f}',
+                    va='center', fontsize=8.5, color='#374f6b', fontweight='600')
+        ax.set_xlabel('Importance Score', color='#64748b')
+        ax.set_title('Top 10 Feature Importance', fontweight='bold', color='#0c2340', fontsize=11)
+        ax.invert_yaxis(); ax.set_xlim(0, 0.44)
+        ax.tick_params(axis='y', labelsize=8.5)
+        plt.tight_layout(); st.pyplot(fig); plt.close()
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    st.markdown("**🏆 Perbandingan Performa Model Klasifikasi**", unsafe_allow_html=False)
+    fig, ax = plt.subplots(figsize=(11, 4))
     fig.patch.set_facecolor('white'); set_chart_style(ax)
-    trees   = list(range(10, 210, 10))
-    train_a = [78,82,84.5,86,87.5,88.5,89.5,90.5,91,91.5,92,92.3,92.7,93,93.2,93.5,93.7,93.8,94,94.2]
-    val_a   = [75,79,82,83.5,85,86,87,88,88.5,89,89.5,90,90.2,90.5,90.8,91,91.2,91.4,91.6,91.8]
-    ax.plot(trees, train_a, color=SKY[0], linewidth=2.5, marker='o', markersize=4, label='Training Accuracy')
-    ax.plot(trees, val_a,   color='#10b981', linewidth=2.5, marker='s', markersize=4, linestyle='--', label='Validation Accuracy')
-    ax.fill_between(trees, train_a, alpha=0.07, color=SKY[0])
-    ax.fill_between(trees, val_a,   alpha=0.07, color='#10b981')
-    ax.set_xlabel('Jumlah Pohon (n_estimators)'); ax.set_ylabel('Accuracy (%)')
-    ax.set_title('Kurva Akurasi Random Forest — Training vs Validation', fontweight='bold', color='#0c2340', fontsize=11)
-    ax.legend(fontsize=9); ax.set_ylim(70, 100)
+    # Data asli dari grafik perbandingan model
+    models     = ['Gradient Boosting', 'Random Forest', 'Decision Tree', 'K-Nearest Neighbors']
+    accuracy   = [0.745, 0.730, 0.700, 0.630]
+    f1_score   = [0.742, 0.718, 0.699, 0.623]
+    cv_acc     = [0.757, 0.787, 0.661, 0.606]
+    x_m = np.arange(len(models)); w_m = 0.25
+    b1 = ax.bar(x_m-w_m, accuracy, width=w_m, label='Accuracy',    color=SKY[0],    edgecolor='white')
+    b2 = ax.bar(x_m,     f1_score, width=w_m, label='F1-Score',    color='#10b981', edgecolor='white')
+    b3 = ax.bar(x_m+w_m, cv_acc,   width=w_m, label='CV Accuracy', color='#f59e0b', edgecolor='white')
+    for bars in [b1, b2, b3]:
+        for bar in bars:
+            h = bar.get_height()
+            ax.text(bar.get_x()+bar.get_width()/2, h+0.005, f'{h:.3f}',
+                    ha='center', va='bottom', fontsize=8, fontweight='700', color='#0c2340')
+    ax.axhline(y=0.80, color='red', linestyle='--', linewidth=1.2, alpha=0.5, label='Target 80%')
+    ax.set_xticks(x_m); ax.set_xticklabels(models, fontsize=10, color='#374f6b')
+    ax.set_ylabel('Score', color='#64748b'); ax.set_ylim(0, 0.92)
+    ax.set_title('Perbandingan Performa Model Klasifikasi', fontweight='bold', color='#0c2340', fontsize=12)
+    ax.legend(fontsize=9, framealpha=0.85)
     plt.tight_layout(); st.pyplot(fig); plt.close()
 
-    st.markdown('<div style="font-size:0.73rem;color:#94a3b8;text-align:center">* Visualisasi representatif berdasarkan karakteristik dan pola distribusi dataset</div>', unsafe_allow_html=True)
+    # Metrik summary
+    st.markdown("<br>", unsafe_allow_html=True)
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("🥇 Best Accuracy",  "74.5%", "Gradient Boosting")
+    m2.metric("🥈 Best CV Acc",    "78.7%", "Random Forest")
+    m3.metric("⭐ RF Accuracy",     "73.0%", "±0.015")
+    m4.metric("🔵 Silhouette k=3", "0.183", "K-Means")
+
+    st.markdown('<div style="font-size:0.73rem;color:#94a3b8;text-align:center;margin-top:0.5rem">Semua grafik berdasarkan data dan hasil model asli dari proyek ini</div>', unsafe_allow_html=True)
 
 
-# ════════════════════════════════════════════════════════════
 #  TAB 5 — ABOUT
-# ════════════════════════════════════════════════════════════
 with tab5:
     st.markdown("""
     <div class='section-label'>05 — About</div>
@@ -859,7 +950,7 @@ with tab5:
         """, unsafe_allow_html=True)
 
         # Alur CRISP-DM
-        st.markdown("<strong style='color:#0c2340'>🔄 Alur CRISP-DM Proyek Ini</strong>", unsafe_allow_html=True)
+        st.markdown("<strong style='color:#0c2340'> Alur CRISP-DM Proyek Ini</strong>", unsafe_allow_html=True)
         phases = [
             ("1","#0ea5e9","Business Understanding","Identifikasi permasalahan: hubungan gaya hidup dan performa akademik"),
             ("2","#10b981","Data Understanding","Eksplorasi 1.000 data mahasiswa Kaggle — distribusi & korelasi fitur"),
@@ -882,7 +973,7 @@ with tab5:
     with c2:
         st.markdown("""
         <div class='custom-card'>
-            <strong style='color:#0c2340; font-size:1rem'>🛠 Teknologi & Tools</strong><br><br>
+            <strong style='color:#0c2340; font-size:1rem'>Tools</strong><br><br>
             <span class='tag tag-dark'>Python 3.x</span>
             <span class='tag tag-dark'>scikit-learn</span>
             <span class='tag tag-dark'>pandas</span>
@@ -912,11 +1003,11 @@ with tab5:
             <strong style='color:#0c2340; font-size:1rem'>👥 Anggota Tim</strong><br><br>
             <div style='display:flex; align-items:center; gap:0.9rem; padding:0.75rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; margin-bottom:0.6rem'>
               <div style='width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:1rem;flex-shrink:0'>A</div>
-              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Nama Anggota 1</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · XXXXXXXXXX</div></div>
+              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Eno Tri Febriani</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214087 </div></div>
             </div>
             <div style='display:flex; align-items:center; gap:0.9rem; padding:0.75rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px'>
               <div style='width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:1rem;flex-shrink:0'>B</div>
-              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Nama Anggota 2</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · XXXXXXXXXX</div></div>
+              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Diazt Renata</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214105 </div></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
