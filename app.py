@@ -706,7 +706,7 @@ with tab5:
     st.markdown("""
     <div class='section-label'>05 — About</div>
     <div class='section-header'>Tentang Proyek</div>
-    <div class='section-desc'>Informasi mengenai metode, dataset, dan teknologi yang digunakan.</div>
+    <div class='section-desc'>Informasi mengenai metode, alur CRISP-DM, dataset, dan tim yang mengerjakan proyek ini.</div>
     """, unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
@@ -718,47 +718,86 @@ with tab5:
             <div style='display:flex; gap:0.75rem; align-items:flex-start; margin-bottom:1rem'>
                 <div style='font-size:1.3rem'>🌲</div>
                 <div>
-                    <strong style='color:#0c2340; font-size:0.9rem'>Random Forest</strong><br>
-                    <span style='color:#64748b; font-size:0.82rem; line-height:1.6'>Ensemble model berbasis decision tree untuk klasifikasi utama dengan akurasi tinggi dan tahan overfitting.</span>
+                    <strong style='color:#0c2340; font-size:0.9rem'>Random Forest Classification</strong><br>
+                    <span style='color:#64748b; font-size:0.82rem; line-height:1.6'>Ensemble model berbasis decision tree untuk memprediksi performa akademik mahasiswa (Tinggi / Sedang / Rendah) dengan akurasi tinggi dan tahan overfitting.</span>
                 </div>
             </div>
             <div style='display:flex; gap:0.75rem; align-items:flex-start; margin-bottom:1rem'>
-                <div style='font-size:1.3rem'>⚡</div>
+                <div style='font-size:1.3rem'>📍</div>
                 <div>
-                    <strong style='color:#0c2340; font-size:0.9rem'>XGBoost</strong><br>
-                    <span style='color:#64748b; font-size:0.82rem; line-height:1.6'>Model gradient boosting untuk perbandingan performa dan peningkatan hasil prediksi.</span>
+                    <strong style='color:#0c2340; font-size:0.9rem'>K-Means Clustering</strong><br>
+                    <span style='color:#64748b; font-size:0.82rem; line-height:1.6'>Algoritma unsupervised learning untuk mengelompokkan mahasiswa ke dalam 3 cluster gaya hidup: <b>Sehat</b>, <b>Berisiko</b>, dan <b>Kurang Tidur</b>.</span>
                 </div>
             </div>
             <div style='display:flex; gap:0.75rem; align-items:flex-start'>
-                <div style='font-size:1.3rem'>🔵</div>
+                <div style='font-size:1.3rem'>📋</div>
                 <div>
-                    <strong style='color:#0c2340; font-size:0.9rem'>K-Means Clustering</strong><br>
-                    <span style='color:#64748b; font-size:0.82rem; line-height:1.6'>Algoritma unsupervised untuk analisis segmentasi dan deteksi pola tersembunyi dalam data.</span>
+                    <strong style='color:#0c2340; font-size:0.9rem'>CRISP-DM Framework</strong><br>
+                    <span style='color:#64748b; font-size:0.82rem; line-height:1.6'>Metodologi standar industri yang memandu proses data mining secara terstruktur melalui 6 fase sistematis dari Business Understanding hingga Deployment.</span>
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
+        st.markdown("<strong style='color:#0c2340'>📋 Alur CRISP-DM Proyek Ini</strong>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        phases = [
+            ("1","#0ea5e9","Business Understanding","Identifikasi permasalahan: hubungan gaya hidup dan performa akademik mahasiswa"),
+            ("2","#10b981","Data Understanding","Eksplorasi 1.000 data mahasiswa Kaggle — distribusi & korelasi antar fitur"),
+            ("3","#f59e0b","Data Preparation","Encoding fitur kategorik, normalisasi, dan split data train/test"),
+            ("4","#8b5cf6","Modeling","Pelatihan K-Means (clustering) & Random Forest (classification)"),
+            ("5","#ef4444","Evaluation","Silhouette Score (K-Means) & Accuracy/F1-Score (Random Forest)"),
+            ("6","#0891b2","Deployment","Deploy aplikasi web interaktif ke Streamlit Cloud"),
+        ]
+        for num, color, title, desc in phases:
+            st.markdown(f"""
+            <div class='phase-step'>
+              <div style='width:28px;height:28px;border-radius:50%;background:{color};display:flex;align-items:center;
+                   justify-content:center;font-weight:800;color:white;font-size:0.8rem;flex-shrink:0'>{num}</div>
+              <div>
+                <div style='font-weight:700;color:#0c2340;font-size:0.86rem'>{title}</div>
+                <div style='font-size:0.79rem;color:#64748b;line-height:1.5'>{desc}</div>
+              </div>
+            </div>""", unsafe_allow_html=True)
+
     with c2:
         st.markdown("""
         <div class='custom-card'>
+            <strong style='color:#0c2340; font-size:1rem'>👥 Anggota Tim</strong><br><br>
+            <div style='display:flex;align-items:center;gap:0.9rem;padding:0.75rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;margin-bottom:0.6rem'>
+              <div style='width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:1rem;flex-shrink:0'>E</div>
+              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Eno Tri Febriani</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214087</div></div>
+            </div>
+            <div style='display:flex;align-items:center;gap:0.9rem;padding:0.75rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px'>
+              <div style='width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:1rem;flex-shrink:0'>D</div>
+              <div><div style='font-weight:700;color:#0c2340;font-size:0.9rem'>Diazt Renata</div><div style='font-size:0.75rem;color:#64748b;font-family:monospace'>NIM · 24051214105</div></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class='custom-card'>
             <strong style='color:#0c2340; font-size:1rem'>🛠 Teknologi & Tools</strong><br><br>
-            <span class='tag tag-dark'>Python 3.11</span>
+            <span class='tag tag-dark'>Python 3.x</span>
             <span class='tag tag-dark'>scikit-learn</span>
             <span class='tag tag-dark'>pandas</span>
             <span class='tag tag-dark'>NumPy</span>
             <span class='tag'>Streamlit</span>
             <span class='tag'>Matplotlib</span>
-            <span class='tag'>Seaborn</span>
-            <span class='tag'>Plotly</span>
-            <br><br>
+            <span class='tag'>joblib</span>
+            <span class='tag'>Kaggle Dataset</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class='custom-card'>
             <strong style='color:#0c2340; font-size:1rem'>📂 Sumber Dataset</strong>
             <p style='color:#64748b; font-size:0.85rem; margin-top:0.5rem; line-height:1.7'>
-            Dataset diperoleh dari <strong style='color:#0284c7'>Kaggle Open Dataset</strong> dan UCI Machine Learning Repository. Lisensi: CC BY 4.0.
+            Dataset diperoleh dari <strong style='color:#0284c7'>Kaggle Open Dataset</strong> yang dipublikasikan oleh <b>Jayaantanaath</b>. Berisi 1.000 catatan mahasiswa dengan 16 fitur gaya hidup dan nilai akademik. Lisensi: CC BY 4.0.
             </p>
-            <div style='background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:0.85rem; margin-top:0.75rem; font-family:monospace; font-size:0.78rem; color:#0284c7; line-height:1.8'>
-                Kelas: KDD-03 <br>
-                Mata Kuliah: Machine Learning<br>
+            <div style='background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:0.85rem;margin-top:0.75rem;font-size:0.82rem;color:#0284c7;line-height:2'>
+                📌 <b>Student Habits vs Academic Performance</b><br>
+                🎓 Mata Kuliah · Data Mining<br>
             </div>
         </div>
         """, unsafe_allow_html=True)
