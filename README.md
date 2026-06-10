@@ -2,7 +2,6 @@
 
 > **UAS Data Mining** — Clustering dan Classification Berbasis CRISP-DM
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://uas-datamining.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3.x-orange?logo=scikit-learn)
 ![License](https://img.shields.io/badge/License-MIT-green)
