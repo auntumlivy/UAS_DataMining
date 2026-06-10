@@ -51,8 +51,7 @@ UAS_DataMining_NamaKelompok/
 │
 ├── app/
 │   ├── app.py                           # Entry point Streamlit
-│   ├── pages/                           # Halaman tab tambahan
-│   └── assets/                          # Gambar & aset statis
+│ 
 │
 ├── laporan/
 │   └── laporan.pdf                      # Laporan akhir proyek
