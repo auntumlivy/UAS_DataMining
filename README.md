@@ -21,7 +21,7 @@ Dataset bersumber dari Kaggle — *Student Habits and Academic Performance* (1.0
 
 ## Demo Aplikasi
 
- **[Buka Aplikasi Streamlit](https://uas-datamining.streamlit.app)**
+ **[Buka Aplikasi Streamlit](https://uasdataminingkelompok4-f8chd7fjshftwrzkq4tm6e.streamlit.app/)**
 
 Aplikasi terdiri dari 5 tab utama:
 | Tab | Konten |
