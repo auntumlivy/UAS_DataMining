@@ -795,7 +795,7 @@ with tab4:
         berisiko_scores    = np.random.normal(62, 15, 320)
         kurangtidur_scores = np.random.normal(52, 13, 330)
         bp = ax.boxplot([sehat_scores.clip(20,100), berisiko_scores.clip(20,100), kurangtidur_scores.clip(20,100)],
-                        labels=['Sehat', 'Berisiko', 'Kurang\nTidur'],
+                        tick_labels=['Sehat', 'Berisiko', 'Kurang\nTidur'],
                         patch_artist=True, widths=0.5,
                         medianprops={'color':'#0c2340','linewidth':2})
         colors_bp = ['#10b981', '#f59e0b', '#ef4444']
